@@ -120,7 +120,26 @@
             max-width: 100vw;
         }
 
-        .text-gradient { background: var(--gradient-primary); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; font-weight: 800; }
+        .text-gradient { background: var(--gradient-primary); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 800; }
+
+        /* ---- App Name: glowing blue/violet animated gradient ---- */
+        .app-name-text {
+            background: linear-gradient(90deg, #38bdf8, #2563eb, #7c3aed, #a855f7, #2563eb, #38bdf8);
+            background-size: 300% auto;
+            -webkit-background-clip: text; background-clip: text;
+            -webkit-text-fill-color: transparent; color: transparent;
+            font-weight: 800;
+            animation: appNameGradientFlow 5s linear infinite, appNameGlowPulse 2.6s ease-in-out infinite;
+            filter: drop-shadow(0 0 6px rgba(56,189,248,0.45)) drop-shadow(0 0 14px rgba(124,58,237,0.35));
+        }
+        @keyframes appNameGradientFlow {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 300% 50%; }
+        }
+        @keyframes appNameGlowPulse {
+            0%, 100% { filter: drop-shadow(0 0 6px rgba(56,189,248,0.45)) drop-shadow(0 0 14px rgba(124,58,237,0.35)); }
+            50% { filter: drop-shadow(0 0 10px rgba(56,189,248,0.75)) drop-shadow(0 0 22px rgba(124,58,237,0.65)); }
+        }
 
         /* =========================================
            3. UI COMPONENTS
@@ -217,7 +236,7 @@
         /* =========================================
            5. PAGE SPECIFIC DESIGNS
         ========================================= */
-        .swiper-container#promotionSliderEl { width: 100%; height: 160px; border-radius: var(--radius-md); margin-bottom: 20px; border: 1px solid var(--border-glass); overflow: hidden; position: relative; display: block; z-index: 1; } 
+        .swiper-container#promotionSliderEl { width: 100%; height: 160px; border-radius: var(--radius-md); margin-bottom: 20px; border: 1px solid var(--border-glass); } 
         .swiper-slide img { width: 100%; height: 100%; object-fit: cover; border-radius: var(--radius-md); }
         
         .home-nav-icons { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
@@ -334,81 +353,8 @@
             object-fit: cover;
             object-position: center top;
         }
-
         /* =========================================
-           8. PAYMENT — BLUE GRADIENT THEME
-        ========================================= */
-        :root, body.theme-dark, body.theme-light, body.theme-neon {
-            --gradient-payment: linear-gradient(135deg, #0f2f9e 0%, #1d4ed8 38%, #2563eb 70%, #38bdf8 100%);
-            --gradient-payment-soft: linear-gradient(135deg, rgba(37,99,235,0.16), rgba(56,189,248,0.08));
-            --payment-accent: #3b82f6;
-        }
-        #recharge-section .btn-primary-gradient,
-        #zapupiPayModal .btn-primary-gradient,
-        #zapupiPayModal #zapOpenPayBtn {
-            background: var(--gradient-payment) !important;
-            background-size: 200% 200% !important;
-            animation: gradientShift 6s ease infinite;
-            box-shadow: 0 6px 20px rgba(37,99,235,0.35) !important;
-        }
-        #recharge-section .text-gradient { background: var(--gradient-payment); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
-        #recharge-section .payment-option-card.active { border-color: var(--payment-accent); background: rgba(59,130,246,0.10); box-shadow: 0 0 0 1px rgba(59,130,246,0.25) inset; }
-        #recharge-section .payment-option-card:active { transform: scale(0.985); }
-        #recharge-section #rechargeAmountInput { border-bottom-color: var(--payment-accent) !important; color: var(--payment-accent); }
-        #recharge-section .amount-preset-btn:active { background: rgba(59,130,246,0.15); border-color: var(--payment-accent); }
-        #recharge-section .glass-card { position: relative; overflow: hidden; }
-        #recharge-section .glass-card::before {
-            content: ''; position: absolute; top: -60%; right: -30%; width: 200px; height: 200px;
-            background: var(--gradient-payment-soft); filter: blur(40px); border-radius: 50%; z-index: 0; pointer-events: none;
-        }
-        #recharge-section .glass-card > * { position: relative; z-index: 1; }
-        #zapupiPayModal { animation: fadeIn 0.25s ease; }
-        #zapupiPayModal > div { animation: cardRise 0.35s cubic-bezier(.22,1,.36,1) both; border-top: 3px solid var(--payment-accent) !important; }
-        #zapupiPayModal #zapCheckStatusBtn { background: rgba(59,130,246,0.15) !important; color: var(--payment-accent) !important; border: 1px solid var(--payment-accent) !important; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes gradientShift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-
-        /* =========================================
-           9. APPLE-STYLE APP BOOT ANIMATION
-        ========================================= */
-        #globalLoaderEl { background: var(--bg-base); background-image: var(--bg-img); overflow: hidden; }
-        .boot-stage { position: relative; width: 170px; height: 170px; display: flex; align-items: center; justify-content: center; }
-        .boot-ring { position: absolute; border-radius: 50%; border: 1.5px solid transparent; }
-        .boot-ring.r1 { width: 170px; height: 170px; border-top-color: var(--accent-cyan); border-right-color: rgba(6,182,212,0.15); opacity: 0.7; animation: bootSpin 2.4s linear infinite; }
-        .boot-ring.r2 { width: 136px; height: 136px; border-top-color: var(--accent-purple); border-left-color: rgba(31,81,255,0.15); opacity: 0.85; animation: bootSpin 1.8s linear infinite reverse; }
-        .boot-ring.r3 { width: 102px; height: 102px; border-top-color: var(--accent-gold); border-bottom-color: rgba(250,204,21,0.12); opacity: 1; animation: bootSpin 1.3s linear infinite; }
-        .boot-bubble { position: absolute; border-radius: 50%; background: var(--gradient-primary); filter: blur(0.5px); opacity: 0.35; animation: bootFloat 3.2s ease-in-out infinite; }
-        .boot-bubble.b1 { width: 14px; height: 14px; top: 6px; left: 18px; animation-delay: 0s; }
-        .boot-bubble.b2 { width: 10px; height: 10px; bottom: 14px; right: 10px; animation-delay: -1s; background: var(--gradient-gold); }
-        .boot-bubble.b3 { width: 8px; height: 8px; top: 30px; right: -4px; animation-delay: -2.1s; }
-        .boot-bubble.b4 { width: 12px; height: 12px; bottom: 0px; left: 6px; animation-delay: -0.6s; background: var(--gradient-gold); }
-        .boot-logo-wrap {
-            width: 72px; height: 72px; border-radius: 22px; overflow: hidden; position: relative; z-index: 2;
-            background: var(--bg-card); display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 12px 36px rgba(31,81,255,0.35), 0 0 0 1px var(--border-glass);
-            animation: bootLogoPulse 1.8s ease-in-out infinite;
-        }
-        .boot-logo-wrap img { width: 100%; height: 100%; object-fit: cover; }
-        .boot-text { margin-top: 26px; font-weight: 800; letter-spacing: 3px; font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; display: flex; align-items: center; gap: 4px; }
-        .boot-text .boot-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--accent-cyan); animation: bootDots 1.4s ease-in-out infinite; }
-        .boot-text .boot-dot:nth-child(2) { background: var(--accent-purple); animation-delay: 0.2s; }
-        .boot-text .boot-dot:nth-child(3) { background: var(--accent-gold); animation-delay: 0.4s; }
-        @keyframes bootSpin { to { transform: rotate(360deg); } }
-        @keyframes bootLogoPulse {
-            0%, 100% { transform: scale(1); box-shadow: 0 12px 36px rgba(31,81,255,0.3), 0 0 0 1px var(--border-glass); }
-            50% { transform: scale(1.07); box-shadow: 0 12px 44px rgba(6,182,212,0.5), 0 0 0 1px var(--border-glass); }
-        }
-        @keyframes bootFloat {
-            0%, 100% { transform: translate(0,0) scale(1); opacity: 0.3; }
-            50% { transform: translate(10px,-14px) scale(1.25); opacity: 0.6; }
-        }
-        @keyframes bootDots {
-            0%, 100% { transform: translateY(0); opacity: 0.4; }
-            50% { transform: translateY(-4px); opacity: 1; }
-        }
-
-        /* =========================================
-           10. LOGIN PAGE — PREMIUM ANIMATION
+           LOGIN PAGE — PREMIUM ANIMATION (login page only)
         ========================================= */
         #login-section { position: relative; }
         .login-blob { position: fixed; border-radius: 50%; filter: blur(60px); z-index: -1; pointer-events: none; opacity: 0.35; }
@@ -418,17 +364,10 @@
             0%, 100% { transform: translate(0,0) scale(1); }
             50% { transform: translate(24px,-30px) scale(1.12); }
         }
-        .login-logo-anim {
-            animation: logoEntrance 0.7s cubic-bezier(.34,1.56,.64,1) both, logoGlowPulse 3.5s ease-in-out 0.7s infinite;
-            border-radius: 18px;
-        }
-        @keyframes logoEntrance {
-            from { opacity: 0; transform: translateY(-24px) scale(0.6) rotate(-8deg); }
-            to { opacity: 1; transform: translateY(0) scale(1) rotate(0); }
-        }
-        @keyframes logoGlowPulse {
-            0%, 100% { box-shadow: 0 8px 24px rgba(31,81,255,0.25); }
-            50% { box-shadow: 0 10px 36px rgba(6,182,212,0.45); }
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
         #login-section .text-center.mb-4 h2 { animation: fadeSlideUp 0.6s ease 0.1s both; }
         #login-section .text-center.mb-4 p { animation: fadeSlideUp 0.6s ease 0.2s both; }
@@ -571,695 +510,6 @@
             background-image: linear-gradient(135deg, #38bdf8, #2563eb);
             -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
         }
-        /* =========================================
-           11. USER PANEL (PROFILE) — PREMIUM UI
-        ========================================= */
-        .profile-header-premium {
-            position: relative; overflow: hidden; border-radius: var(--radius-xl);
-            padding: 28px 16px 22px; animation: cardRise 0.6s cubic-bezier(.22,1,.36,1) both;
-        }
-        .profile-header-premium::before {
-            content: ''; position: absolute; top: -70%; left: 50%; transform: translateX(-50%);
-            width: 280px; height: 220px; background: var(--gradient-primary); filter: blur(60px);
-            opacity: 0.22; z-index: 0; animation: floatBlob 12s ease-in-out infinite;
-        }
-        .profile-header-premium > * { position: relative; z-index: 1; }
-        .profile-avatar-wrapper { border-radius: 50%; animation: avatarRingPulse 3s ease-in-out infinite; }
-        @keyframes avatarRingPulse {
-            0%, 100% { box-shadow: 0 0 0 0 rgba(31,81,255,0.35); }
-            50% { box-shadow: 0 0 0 9px rgba(31,81,255,0); }
-        }
-        .profile-avatar { box-shadow: 0 8px 28px rgba(31,81,255,0.25); }
-        .stat-box { position: relative; overflow: hidden; transition: transform 0.2s ease, box-shadow 0.2s ease; }
-        .stat-box::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--gradient-primary); opacity: 0.75; }
-        .stat-box:active { transform: scale(0.96); }
-        #profile-section .list-group-item { transition: transform 0.18s ease, background-color 0.2s ease, padding-left 0.2s ease; }
-        #profile-section .list-group-item:active { transform: scale(0.99); background: rgba(128,128,128,0.08); padding-left: 18px; }
-
-        /* =========================================
-           12. MATCHES UI — PREMIUM TOURNAMENT CARDS
-        ========================================= */
-        .tournament-card {
-            animation: cardRise 0.5s cubic-bezier(.22,1,.36,1) both;
-            transition: transform 0.25s ease, box-shadow 0.25s ease;
-            border-top: 1px solid rgba(255,255,255,0.06);
-        }
-        .tournament-card:active { transform: scale(0.985); box-shadow: 0 6px 22px rgba(0,0,0,0.25); }
-        .tournament-card-timer { animation: timerPulse 2.2s ease-in-out infinite; }
-        @keyframes timerPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.55; } }
-        .info-item { transition: transform 0.2s ease; }
-        .info-item strong { display: inline-block; transition: transform 0.2s ease; }
-        .tournament-card:active .info-item strong { transform: scale(1.04); }
-        .progress-bar { background-size: 200% 100%; animation: gradientShift 4s ease infinite; }
-        .tournament-card .btn-join, .tournament-card .btn-idpass, .tournament-card .btn-results {
-            background-size: 200% 200%; animation: gradientShift 6s ease infinite;
-        }
-        /* =========================================
-           13. APPLE LIQUID UI — NON-LOGIN APP SHELL
-        ========================================= */
-        body:not(:has(#login-section.active)) {
-            --bg-base: #05070c;
-            --bg-surface: rgba(18, 22, 33, 0.62);
-            --bg-card: rgba(20, 25, 38, 0.72);
-            --text-main: #f8fbff;
-            --text-muted: rgba(226, 232, 240, 0.66);
-            --accent-cyan: #5eead4;
-            --accent-purple: #7c3aed;
-            --accent-gold: #f8d66d;
-            --gradient-primary: linear-gradient(135deg, #5eead4 0%, #60a5fa 42%, #a78bfa 100%);
-            --gradient-gold: linear-gradient(135deg, #fff1a8 0%, #f8d66d 42%, #f59e0b 100%);
-            --border-glass: rgba(255,255,255,0.14);
-            background:
-                radial-gradient(circle at 18% -8%, rgba(94,234,212,0.20), transparent 32%),
-                radial-gradient(circle at 94% 8%, rgba(167,139,250,0.24), transparent 34%),
-                radial-gradient(circle at 45% 112%, rgba(96,165,250,0.16), transparent 38%),
-                linear-gradient(180deg, #05070c 0%, #0b1020 48%, #070a12 100%);
-            color: var(--text-main);
-            padding-top: 84px;
-        }
-
-        body.theme-light:not(:has(#login-section.active)) {
-            --bg-base: #eef4ff;
-            --bg-surface: rgba(255,255,255,0.76);
-            --bg-card: rgba(255,255,255,0.82);
-            --text-main: #101827;
-            --text-muted: rgba(30,41,59,0.62);
-            --border-glass: rgba(15,23,42,0.11);
-            background:
-                radial-gradient(circle at 12% -10%, rgba(45,212,191,0.26), transparent 34%),
-                radial-gradient(circle at 92% 8%, rgba(129,140,248,0.24), transparent 36%),
-                linear-gradient(180deg, #f8fbff 0%, #eaf2ff 55%, #f7fbff 100%);
-        }
-
-        body.theme-neon:not(:has(#login-section.active)) {
-            --bg-base: #020403;
-            --bg-surface: rgba(4, 20, 20, 0.70);
-            --bg-card: rgba(3, 12, 16, 0.82);
-            --text-main: #eafffb;
-            --text-muted: rgba(186,255,247,0.64);
-            --accent-cyan: #00fff0;
-            --accent-purple: #8b5cf6;
-            --accent-gold: #faff00;
-            --gradient-primary: linear-gradient(135deg, #00fff0 0%, #1f51ff 50%, #ff4dff 100%);
-            --border-glass: rgba(0,255,240,0.24);
-        }
-
-        body:not(:has(#login-section.active))::before {
-            content: '';
-            position: fixed;
-            inset: 0;
-            z-index: -2;
-            pointer-events: none;
-            background-image:
-                linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
-            background-size: 48px 48px;
-            mask-image: linear-gradient(to bottom, rgba(0,0,0,0.85), transparent 72%);
-        }
-
-        body:not(:has(#login-section.active)) .main-content {
-            max-width: 520px;
-            padding: 0 18px;
-        }
-
-        body:not(:has(#login-section.active)) .app-header {
-            top: max(10px, env(safe-area-inset-top));
-            width: calc(100% - 24px);
-            max-width: 496px;
-            height: 66px;
-            border: 1px solid rgba(255,255,255,0.16);
-            border-radius: 24px;
-            background:
-                linear-gradient(145deg, rgba(255,255,255,0.15), rgba(255,255,255,0.045)),
-                var(--bg-surface);
-            box-shadow:
-                0 18px 55px rgba(0,0,0,0.38),
-                inset 0 1px 0 rgba(255,255,255,0.18);
-            backdrop-filter: blur(28px) saturate(1.5);
-            -webkit-backdrop-filter: blur(28px) saturate(1.5);
-        }
-
-        body:not(:has(#login-section.active)) .header-logo,
-        body:not(:has(#login-section.active)) .profile-avatar {
-            border: 1px solid rgba(255,255,255,0.26);
-            box-shadow: 0 10px 28px rgba(96,165,250,0.30), inset 0 1px 0 rgba(255,255,255,0.18);
-        }
-
-        body:not(:has(#login-section.active)) .header-title,
-        body:not(:has(#login-section.active)) .section-title,
-        body:not(:has(#login-section.active)) h2,
-        body:not(:has(#login-section.active)) h3 {
-            letter-spacing: 0;
-        }
-
-        body:not(:has(#login-section.active)) .app-name-text,
-        body:not(:has(#login-section.active)) .section.active .section-title,
-        body:not(:has(#login-section.active)) .text-gradient {
-            background: linear-gradient(100deg, #ffffff 0%, #c7f9ff 28%, #a78bfa 68%, #ffffff 100%);
-            background-size: 220% 100%;
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: textAurora 7s ease-in-out infinite;
-        }
-
-        @keyframes textAurora {
-            0%, 100% { background-position: 0% 50%; filter: drop-shadow(0 0 0 rgba(94,234,212,0)); }
-            50% { background-position: 100% 50%; filter: drop-shadow(0 0 12px rgba(94,234,212,0.20)); }
-        }
-
-        body:not(:has(#login-section.active)) .section.active {
-            animation: appSectionRise 0.58s cubic-bezier(.22,1,.36,1) both;
-        }
-
-        @keyframes appSectionRise {
-            from { opacity: 0; transform: translateY(18px) scale(0.985); filter: blur(8px); }
-            to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
-        }
-
-        body:not(:has(#login-section.active)) .glass-card,
-        body:not(:has(#login-section.active)) .tournament-card,
-        body:not(:has(#login-section.active)) .modal-content,
-        body:not(:has(#login-section.active)) .theme-card,
-        body:not(:has(#login-section.active)) .payment-option-card,
-        body:not(:has(#login-section.active)) .referral-box {
-            position: relative;
-            overflow: hidden;
-            background:
-                linear-gradient(145deg, rgba(255,255,255,0.13), rgba(255,255,255,0.035)),
-                var(--bg-card);
-            border: 1px solid rgba(255,255,255,0.14);
-            border-radius: 22px;
-            box-shadow:
-                0 18px 55px rgba(0,0,0,0.28),
-                inset 0 1px 0 rgba(255,255,255,0.15);
-            backdrop-filter: blur(24px) saturate(1.4);
-            -webkit-backdrop-filter: blur(24px) saturate(1.4);
-        }
-
-        body:not(:has(#login-section.active)) .btn-custom,
-        body:not(:has(#login-section.active)) .social-btn,
-        body:not(:has(#login-section.active)) .amount-preset-btn,
-        body:not(:has(#login-section.active)) .copy-btn {
-            position: relative;
-            overflow: hidden;
-            min-height: 46px;
-            border-radius: 16px !important;
-            transform: translateZ(0);
-            transition: transform 0.18s cubic-bezier(.22,1,.36,1), box-shadow 0.24s ease, filter 0.24s ease, border-color 0.24s ease;
-        }
-
-        body:not(:has(#login-section.active)) .btn-primary-gradient {
-            background: var(--gradient-primary) !important;
-            background-size: 220% 220% !important;
-            box-shadow:
-                0 14px 34px rgba(96,165,250,0.30),
-                0 8px 24px rgba(124,58,237,0.24),
-                inset 0 1px 0 rgba(255,255,255,0.30);
-            animation: gradientShift 5.5s ease infinite;
-        }
-
-        body:not(:has(#login-section.active)) .btn-custom:active,
-        body:not(:has(#login-section.active)) .social-btn:active,
-        body:not(:has(#login-section.active)) .home-nav-item:active,
-        body:not(:has(#login-section.active)) .theme-card:active,
-        body:not(:has(#login-section.active)) .payment-option-card:active {
-            transform: translateY(1px) scale(0.975);
-            filter: brightness(1.08);
-        }
-
-        body:not(:has(#login-section.active)) .btn-outline-custom,
-        body:not(:has(#login-section.active)) .form-control,
-        body:not(:has(#login-section.active)) .tournament-tabs {
-            background: rgba(255,255,255,0.07);
-            border: 1px solid rgba(255,255,255,0.13);
-            box-shadow: inset 0 1px 0 rgba(255,255,255,0.09);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-        }
-
-        body:not(:has(#login-section.active)) .form-control {
-            min-height: 48px;
-            border-radius: 16px;
-        }
-
-        body:not(:has(#login-section.active)) .form-control:focus {
-            border-color: rgba(94,234,212,0.70);
-            box-shadow: 0 0 0 4px rgba(94,234,212,0.13), 0 14px 34px rgba(96,165,250,0.14);
-            transform: translateY(-1px);
-        }
-
-        body:not(:has(#login-section.active)) .swiper-container#promotionSliderEl {
-            height: 178px;
-            border-radius: 24px;
-            border-color: rgba(255,255,255,0.16);
-            box-shadow: 0 22px 60px rgba(0,0,0,0.34);
-        }
-
-        body:not(:has(#login-section.active)) .swiper-slide img,
-        body:not(:has(#login-section.active)) .tournament-banner-image {
-            filter: saturate(1.12) contrast(1.05);
-            transform: scale(1.01);
-        }
-
-        body:not(:has(#login-section.active)) .home-nav-icons {
-            gap: 12px;
-        }
-
-        body:not(:has(#login-section.active)) .home-nav-item {
-            transition: transform 0.22s cubic-bezier(.22,1,.36,1), color 0.22s ease;
-        }
-
-        body:not(:has(#login-section.active)) .home-nav-item .icon-wrapper {
-            width: 52px;
-            height: 52px;
-            border-radius: 18px;
-            color: #f8fbff;
-            background:
-                linear-gradient(145deg, rgba(94,234,212,0.28), rgba(167,139,250,0.18)),
-                rgba(255,255,255,0.07);
-            border: 1px solid rgba(255,255,255,0.18);
-            box-shadow: 0 12px 30px rgba(96,165,250,0.18), inset 0 1px 0 rgba(255,255,255,0.20);
-            transition: transform 0.22s ease, box-shadow 0.22s ease;
-        }
-
-        body:not(:has(#login-section.active)) .home-nav-item:active .icon-wrapper {
-            transform: scale(0.92) rotate(-2deg);
-            box-shadow: 0 8px 22px rgba(94,234,212,0.22), inset 0 1px 0 rgba(255,255,255,0.20);
-        }
-
-        body:not(:has(#login-section.active)) .game-card-new {
-            border-radius: 24px;
-            border-color: rgba(255,255,255,0.16);
-            box-shadow: 0 18px 45px rgba(0,0,0,0.28);
-            transition: transform 0.28s cubic-bezier(.22,1,.36,1), box-shadow 0.28s ease, filter 0.28s ease;
-        }
-
-        body:not(:has(#login-section.active)) .game-card-new:active {
-            transform: translateY(2px) scale(0.98);
-            filter: saturate(1.16);
-        }
-
-        body:not(:has(#login-section.active)) .game-card-new-overlay {
-            background: linear-gradient(to top, rgba(3,7,18,0.95) 0%, rgba(3,7,18,0.48) 48%, transparent 76%);
-        }
-
-        body:not(:has(#login-section.active)) .game-play-btn,
-        body:not(:has(#login-section.active)) .exclusive-live-badge,
-        body:not(:has(#login-section.active)) .tournament-card-tags span,
-        body:not(:has(#login-section.active)) .tournament-card-timer {
-            border-radius: 999px;
-            box-shadow: inset 0 1px 0 rgba(255,255,255,0.24);
-            backdrop-filter: blur(14px);
-            -webkit-backdrop-filter: blur(14px);
-        }
-
-        body:not(:has(#login-section.active)) .exclusive-live-badge {
-            background: linear-gradient(135deg, #ff4d6d, #ff8a3d);
-            animation: liveFloat 1.8s ease-in-out infinite;
-        }
-
-        @keyframes liveFloat {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-2px); }
-        }
-
-        body:not(:has(#login-section.active)) .tournament-tabs {
-            padding: 5px;
-            border-radius: 20px;
-            position: sticky;
-            top: 84px;
-            z-index: 20;
-        }
-
-        body:not(:has(#login-section.active)) .tab-item {
-            border-radius: 16px;
-            transition: transform 0.2s ease, background 0.24s ease, color 0.24s ease, box-shadow 0.24s ease;
-        }
-
-        body:not(:has(#login-section.active)) .tab-item.active {
-            background: linear-gradient(145deg, rgba(255,255,255,0.20), rgba(255,255,255,0.08));
-            color: #fff;
-            box-shadow: 0 10px 26px rgba(96,165,250,0.18), inset 0 1px 0 rgba(255,255,255,0.18);
-        }
-
-        body:not(:has(#login-section.active)) .tab-item:active {
-            transform: scale(0.97);
-        }
-
-        body:not(:has(#login-section.active)) .tournament-card {
-            border-radius: 26px;
-            box-shadow: 0 24px 68px rgba(0,0,0,0.34), inset 0 1px 0 rgba(255,255,255,0.12);
-        }
-
-        body:not(:has(#login-section.active)) .tournament-card-info,
-        body:not(:has(#login-section.active)) .stat-box {
-            background: rgba(255,255,255,0.075);
-            border: 1px solid rgba(255,255,255,0.12);
-            border-radius: 18px;
-            box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
-        }
-
-        body:not(:has(#login-section.active)) .wallet-card-hero {
-            overflow: hidden;
-            border-radius: 28px;
-            background:
-                radial-gradient(circle at 18% 12%, rgba(255,255,255,0.34), transparent 22%),
-                linear-gradient(135deg, #0ea5e9 0%, #6366f1 45%, #a855f7 100%);
-            box-shadow: 0 24px 70px rgba(79,70,229,0.34), inset 0 1px 0 rgba(255,255,255,0.25);
-        }
-
-        body:not(:has(#login-section.active)) .balance-value {
-            text-shadow: 0 10px 32px rgba(0,0,0,0.28);
-            animation: balancePop 0.7s cubic-bezier(.22,1,.36,1) both;
-        }
-
-        @keyframes balancePop {
-            from { opacity: 0; transform: translateY(14px) scale(0.96); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
-        }
-
-        body:not(:has(#login-section.active)) .bottom-nav {
-            bottom: max(14px, env(safe-area-inset-bottom));
-            height: 70px;
-            border-radius: 26px;
-            background:
-                linear-gradient(145deg, rgba(255,255,255,0.16), rgba(255,255,255,0.045)),
-                rgba(12,16,26,0.72);
-            border: 1px solid rgba(255,255,255,0.18);
-            box-shadow:
-                0 24px 70px rgba(0,0,0,0.48),
-                inset 0 1px 0 rgba(255,255,255,0.18);
-            backdrop-filter: blur(30px) saturate(1.5);
-            -webkit-backdrop-filter: blur(30px) saturate(1.5);
-        }
-
-        body:not(:has(#login-section.active)) .nav-item {
-            border-radius: 18px;
-            transition: transform 0.2s cubic-bezier(.22,1,.36,1), color 0.2s ease, background 0.2s ease;
-        }
-
-        body:not(:has(#login-section.active)) .nav-item.active:not(.nav-item-center) {
-            color: #fff;
-            background: rgba(255,255,255,0.08);
-        }
-
-        body:not(:has(#login-section.active)) .nav-item.active i {
-            color: var(--accent-cyan);
-            filter: drop-shadow(0 0 10px rgba(94,234,212,0.40));
-        }
-
-        body:not(:has(#login-section.active)) .nav-item:active {
-            transform: scale(0.94);
-        }
-
-        body:not(:has(#login-section.active)) .nav-item.nav-item-center {
-            width: 58px;
-            height: 58px;
-            background: var(--gradient-primary);
-            background-size: 220% 220%;
-            border: 5px solid var(--bg-base);
-            box-shadow: 0 16px 34px rgba(96,165,250,0.34), 0 0 0 1px rgba(255,255,255,0.18) inset;
-            animation: gradientShift 5.5s ease infinite, centerNavPulse 3s ease-in-out infinite;
-        }
-
-        @keyframes centerNavPulse {
-            0%, 100% { transform: translateY(-20px) scale(1); }
-            50% { transform: translateY(-23px) scale(1.04); }
-        }
-
-        body:not(:has(#login-section.active)) .list-group-item {
-            background: rgba(255,255,255,0.015);
-            transition: transform 0.2s ease, background 0.2s ease, padding-left 0.2s ease;
-        }
-
-        body:not(:has(#login-section.active)) .list-group-item:active {
-            transform: scale(0.985);
-            background: rgba(255,255,255,0.08);
-        }
-
-        body:not(:has(#login-section.active)) .notification-icon,
-        body:not(:has(#login-section.active)) .wallet-chip,
-        body:not(:has(#login-section.active)) .edit-avatar-btn {
-            border-radius: 999px;
-            background: rgba(255,255,255,0.08);
-            border: 1px solid rgba(255,255,255,0.14);
-            box-shadow: inset 0 1px 0 rgba(255,255,255,0.12);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        body:not(:has(#login-section.active)) .notification-icon {
-            width: 38px;
-            height: 38px;
-        }
-
-        body:not(:has(#login-section.active)) .wallet-chip:active,
-        body:not(:has(#login-section.active)) .notification-icon:active,
-        body:not(:has(#login-section.active)) .edit-avatar-btn:active {
-            transform: scale(0.94);
-        }
-
-        body:not(:has(#login-section.active)) .modal-content {
-            border-radius: 28px;
-        }
-
-        body:not(:has(#login-section.active)) .accordion-button {
-            background: rgba(255,255,255,0.06);
-            color: var(--text-main);
-            border-radius: 18px !important;
-        }
-
-        @media (hover: hover) and (pointer: fine) {
-            body:not(:has(#login-section.active)) .btn-custom:hover,
-            body:not(:has(#login-section.active)) .social-btn:hover,
-            body:not(:has(#login-section.active)) .home-nav-item:hover,
-            body:not(:has(#login-section.active)) .tournament-card:hover,
-            body:not(:has(#login-section.active)) .game-card-new:hover,
-            body:not(:has(#login-section.active)) .theme-card:hover,
-            body:not(:has(#login-section.active)) .payment-option-card:hover {
-                transform: translateY(-2px);
-            }
-
-        }
-
-        @media (max-width: 380px) {
-            body:not(:has(#login-section.active)) .main-content { padding: 0 12px; }
-            body:not(:has(#login-section.active)) .home-nav-item .icon-wrapper { width: 46px; height: 46px; border-radius: 16px; }
-            body:not(:has(#login-section.active)) .bottom-nav { width: calc(100% - 20px); }
-            body:not(:has(#login-section.active)) .nav-item span { font-size: 0.64rem; }
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-            body:not(:has(#login-section.active)) *,
-            body:not(:has(#login-section.active)) *::before,
-            body:not(:has(#login-section.active)) *::after {
-                animation-duration: 0.001ms !important;
-                animation-iteration-count: 1 !important;
-                transition-duration: 0.001ms !important;
-                scroll-behavior: auto !important;
-            }
-        }
-
-        /* scroll lock used by match results panel overlay */
-        body.zap-pay-open {
-            overflow: hidden;
-        }
-
-        /* =========================================
-           15. MATCH RESULTS — FLOATING PANEL
-        ========================================= */
-        .match-results-panel {
-            position: fixed;
-            inset: 0;
-            z-index: 9999;
-            display: flex;
-            align-items: flex-end;
-            justify-content: center;
-            background: rgba(1, 6, 18, 0.72);
-            backdrop-filter: blur(20px) saturate(1.3);
-            -webkit-backdrop-filter: blur(20px) saturate(1.3);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            padding: 0;
-        }
-        .match-results-panel.show { opacity: 1; }
-
-        .match-results-card {
-            width: min(100%, 480px);
-            max-height: 82vh;
-            display: flex;
-            flex-direction: column;
-            background: var(--bg-card);
-            border: 1px solid var(--border-glass);
-            border-radius: 28px 28px 0 0;
-            box-shadow: 0 -20px 60px rgba(0,0,0,0.5);
-            transform: translateY(40px);
-            transition: transform 0.35s cubic-bezier(.22,1,.36,1);
-            overflow: hidden;
-        }
-        .match-results-panel.show .match-results-card {
-            transform: translateY(0);
-        }
-
-        .mr-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 20px 20px 14px;
-            border-bottom: 1px solid var(--border-glass);
-            flex-shrink: 0;
-        }
-        .mr-title { font-weight: 800; font-size: 1.05rem; margin: 0 0 2px; color: var(--text-main); }
-        .mr-subtitle { font-size: 0.78rem; color: var(--text-muted); font-weight: 600; margin: 0; }
-        .mr-close-btn {
-            width: 38px; height: 38px; border-radius: 50%;
-            background: rgba(128,128,128,0.12); border: 1px solid var(--border-glass);
-            color: var(--text-main); display: flex; align-items: center; justify-content: center;
-            font-size: 1.1rem; flex-shrink: 0; cursor: pointer;
-            transition: transform 0.15s ease, background 0.15s ease;
-        }
-        .mr-close-btn:active { transform: scale(0.92); background: rgba(128,128,128,0.2); }
-
-        .mr-list {
-            overflow-y: auto;
-            padding: 10px 14px 24px;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        .match-result-row {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px;
-            border-radius: 16px;
-            margin-bottom: 8px;
-            background: rgba(128,128,128,0.06);
-            border: 1px solid var(--border-glass);
-            transition: transform 0.15s ease, background 0.2s ease;
-        }
-        .match-result-row.is-me {
-            border-color: var(--accent-cyan);
-            background: rgba(6, 182, 212, 0.08);
-            box-shadow: 0 0 0 1px rgba(6, 182, 212, 0.2) inset;
-        }
-        .mr-rank {
-            flex-shrink: 0;
-            width: 34px;
-            text-align: center;
-            font-weight: 800;
-            font-size: 0.9rem;
-            color: var(--text-muted);
-        }
-        .mr-avatar img {
-            width: 42px; height: 42px; border-radius: 12px; object-fit: cover;
-            border: 1px solid var(--border-glass);
-            flex-shrink: 0;
-        }
-        .mr-info { flex: 1; min-width: 0; }
-        .mr-name {
-            font-weight: 800; font-size: 0.92rem; color: var(--text-main);
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-            display: flex; align-items: center; gap: 6px;
-        }
-        .mr-you-badge {
-            font-size: 0.6rem; font-weight: 800; letter-spacing: 0.5px;
-            background: var(--gradient-primary); color: #fff;
-            padding: 2px 7px; border-radius: 999px; text-transform: uppercase;
-            flex-shrink: 0;
-        }
-        .mr-uid { font-size: 0.72rem; color: var(--text-muted); font-weight: 600; }
-        .mr-stats {
-            flex-shrink: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            gap: 4px;
-        }
-        .mr-kills {
-            font-size: 0.8rem; font-weight: 800; color: var(--accent-cyan);
-            display: flex; align-items: center; gap: 4px;
-        }
-        .mr-prize {
-            font-size: 0.95rem; font-weight: 800; color: var(--accent-gold);
-        }
-        .match-result-row.rank-1 {
-            border-color: rgba(250, 204, 21, 0.45);
-            background: rgba(250, 204, 21, 0.08);
-        }
-        .match-result-row.rank-2 {
-            border-color: rgba(192, 192, 192, 0.35);
-            background: rgba(192, 192, 192, 0.06);
-        }
-        .match-result-row.rank-3 {
-            border-color: rgba(205, 127, 50, 0.35);
-            background: rgba(205, 127, 50, 0.06);
-        }
-        .match-result-row.rank-1 .mr-rank,
-        .match-result-row.rank-2 .mr-rank,
-        .match-result-row.rank-3 .mr-rank {
-            font-size: 1.3rem;
-        }
-
-        @media (max-width: 380px) {
-            .mr-header { padding: 16px 16px 12px; }
-            .mr-list { padding: 8px 10px 20px; }
-        }
-
-        /* =========================================
-           16. WALLET SUCCESS POPUP
-        ========================================= */
-        .wallet-success-popup {
-            position: fixed;
-            inset: 0;
-            z-index: 10001;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: rgba(1, 6, 18, 0.78);
-            backdrop-filter: blur(20px) saturate(1.3);
-            -webkit-backdrop-filter: blur(20px) saturate(1.3);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            padding: 16px;
-        }
-        .wallet-success-popup.show { opacity: 1; }
-
-        .wallet-success-card {
-            width: min(100%, 340px);
-            background: var(--bg-card);
-            border: 1px solid var(--border-glass);
-            border-radius: 26px;
-            padding: 32px 24px;
-            text-align: center;
-            box-shadow: 0 24px 70px rgba(0,0,0,0.5);
-            transform: scale(0.85) translateY(20px);
-            transition: transform 0.35s cubic-bezier(.22,1,.36,1);
-        }
-        .wallet-success-popup.show .wallet-success-card {
-            transform: scale(1) translateY(0);
-        }
-
-        .ws-checkmark {
-            width: 84px; height: 84px;
-            margin: 0 auto 18px;
-            border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 2.6rem;
-            color: #07101F;
-            background: linear-gradient(135deg, #00D26A, #00F58A);
-            box-shadow: 0 0 42px rgba(0,245,138,0.4), inset 0 1px 0 rgba(255,255,255,0.35);
-        }
-        .ws-title {
-            font-weight: 800; font-size: 1.15rem;
-            color: var(--text-main);
-            margin: 0 0 8px;
-        }
-        .ws-message {
-            font-size: 0.9rem; font-weight: 600;
-            color: var(--text-muted);
-            margin: 0 0 22px;
-            line-height: 1.5;
-        }
     </style>
 
     <!-- Instant Theme Loader to prevent FOUC -->
@@ -1285,28 +535,17 @@
         <img id="splashImgEl" src="" alt="">
     </div>
 
-    <!-- Global Loader: Apple-style orbiting bubble boot animation -->
-    <div id="globalLoaderEl" style="position: fixed; inset: 0; z-index: 9999; display: flex; justify-content: center; align-items: center; flex-direction: column;">
-        <div class="boot-stage">
-            <div class="boot-ring r1"></div>
-            <div class="boot-ring r2"></div>
-            <div class="boot-ring r3"></div>
-            <div class="boot-bubble b1"></div>
-            <div class="boot-bubble b2"></div>
-            <div class="boot-bubble b3"></div>
-            <div class="boot-bubble b4"></div>
-            <div class="boot-logo-wrap">
-                <img class="app-logo-img" src="https://i.ibb.co/QF0CmFm5/434788bb-f70b-4a9a-85b8-1967af083a80.png" alt="Logo">
-            </div>
-        </div>
-        <div class="boot-text">Loading <span class="boot-dot"></span><span class="boot-dot"></span><span class="boot-dot"></span></div>
+    <!-- Global Loader -->
+    <div id="globalLoaderEl" style="position: fixed; inset: 0; background: var(--bg-base); z-index: 9999; display: flex; justify-content: center; align-items: center; flex-direction: column;">
+        <div class="spinner-border" style="color: var(--accent-cyan); width: 3rem; height: 3rem;" role="status"></div>
+        <div class="mt-3 fw-bold text-uppercase" style="color: var(--text-muted); letter-spacing: 2px; font-size: 0.9rem;">Loading...</div>
     </div>
 
     <!-- Header -->
     <header class="app-header">
         <div class="header-left">
             <button class="btn-custom-link" id="headerBackBtnEl" style="font-size: 1.8rem; display: none; color: var(--text-main); padding-right:10px; background:transparent; border:none;"><i class="bi bi-arrow-left-short"></i></button>
-            <img src="https://i.ibb.co/QF0CmFm5/434788bb-f70b-4a9a-85b8-1967af083a80.png" alt="Logo" class="header-logo app-logo-img" id="appLogoEl">
+            <img src="https://via.placeholder.com/80/18181b/06b6d4?text=LOGO" alt="Logo" class="header-logo app-logo-img" id="appLogoEl">
             <div class="header-title" id="headerTitleContainerEl">
                 <span class="app-name-text">App Name</span>
                 <small id="headerUserGreetingEl" style="display:none;"></small>
@@ -1330,6 +569,12 @@
         <section id="login-section" class="section active">
             <div class="login-blob b1"></div>
             <div class="login-blob b2"></div>
+
+            <div class="text-center mb-4 pt-4">
+                <img src="https://via.placeholder.com/100/18181b/06b6d4?text=LOGO" class="app-logo-img" style="width: 80px; height: 80px; object-fit: cover; border-radius: 16px; margin-bottom: 16px;">
+                <h2 class="fw-bold m-0 text-gradient">Welcome to <span class="app-name-text">Arena</span></h2>
+                <p class="text-muted small fw-bold">Play. Compete. Win Cash.</p>
+            </div>
 
             <div class="glass-card login-glass-card">
                 <form id="emailLoginForm">
@@ -1370,8 +615,8 @@
 
                     <div class="login-input-pill mb-3">
                         <div class="w-100">
-                            <label>In-Game Name</label>
-                            <input type="text" id="signupNameInputEl" placeholder="Your Game Name" required>
+                            <label>Your Name</label>
+                            <input type="text" id="signupNameInputEl" placeholder="Your Name" required>
                         </div>
                     </div>
 
@@ -1467,14 +712,14 @@
             <div id="walletHistoryListEl" class="placeholder-glow mb-3">
                 <p class="text-muted text-center small fw-bold mt-3">Loading history...</p>
             </div>
-            <a href="#" data-section="transaction-history-section" id="showAllTransactionsBtnEl" class="list-group-item d-flex justify-content-between align-items-center glass-card mb-4" style="display:none; border-radius: var(--radius-lg);">
-                <span><i class="bi bi-receipt"></i> Show Transaction History</span><i class="bi bi-chevron-right text-muted"></i>
+            <a href="#" data-section="transaction-history-section" id="showAllTransactionsBtnEl" class="list-group-item d-flex justify-content-between align-items-center glass-card mb-4" style="display:none;">
+                <span><i class="bi bi-list-ul"></i> View All Transactions</span><i class="bi bi-chevron-right text-muted"></i>
             </a>
         </section>
 
-        <!-- ================= FULL TRANSACTION HISTORY ================= -->
+        <!-- ================= TRANSACTION HISTORY (FULL) ================= -->
         <section id="transaction-history-section" class="section">
-            <h2 class="section-title mb-3"><i class="bi bi-clock-history" style="color: var(--accent-purple);"></i> All Transactions</h2>
+            <h2 class="section-title mb-3">Transaction History</h2>
             <div id="fullTransactionHistoryListEl" class="placeholder-glow mb-4">
                 <p class="text-muted text-center small fw-bold mt-3">Loading history...</p>
             </div>
@@ -1523,7 +768,7 @@
                             <input type="radio" name="payType" value="manual">
                         </label>
                     </div>
-                    <button class="btn-custom btn-primary-gradient w-100" id="proceedToPayActionBtn">Pay via ZapUPI</button>
+                    <button class="btn-custom btn-primary-gradient w-100" id="proceedToPayActionBtn">Proceed to Pay</button>
                 </div>
             </div>
 
@@ -1555,7 +800,7 @@
 
         <!-- ================= PROFILE ================= -->
         <section id="profile-section" class="section">
-            <div class="glass-card profile-header profile-header-premium border-0 shadow-none mb-0 bg-transparent text-center">
+            <div class="glass-card profile-header border-0 shadow-none mb-0 bg-transparent text-center">
                 <div class="profile-avatar-wrapper placeholder-glow">
                     <img src="https://via.placeholder.com/100" class="profile-avatar" id="profileAvatarEl">
                     <button class="edit-avatar-btn" id="editNameBtnEl"><i class="bi bi-pencil-fill"></i></button>
@@ -1888,6 +1133,10 @@
         const CURRENT_APP_VERSION_NAME = '1.0.0'; // Change this when you release a new version
 
         let currentUser = null, userProfile = {}, currentSectionId = 'login-section', appSettings = {}, swiperInstance, currentTournamentGameId = null;
+        // FIX: guards the "Your Name" overwrite race + the auth permission-denied auto-logout bug.
+        // Set true right before createUserWithEmailAndPassword(), cleared once the signup
+        // handler finishes writing the real profile.
+        let isSigningUp = false;
 
         // Initialize Modals
         let modals = {};
@@ -1903,15 +1152,6 @@
                 systemUpdate: new bootstrap.Modal(getEl('systemUpdateModal'), { backdrop: 'static', keyboard: false })
             };
             
-            // Fix: Blur focused element before Bootstrap hides any modal (avoids aria-hidden focus warning)
-            document.querySelectorAll('.modal').forEach(m => {
-                m.addEventListener('hide.bs.modal', () => {
-                    if (m.contains(document.activeElement)) {
-                        document.activeElement.blur();
-                    }
-                });
-            });
-
             // Theme Setup on Load
             loadSavedTheme();
             document.querySelectorAll('.theme-card').forEach(card => {
@@ -2074,81 +1314,87 @@
         /* --- Auth Handling --- */
         onAuthStateChanged(auth, async (user) => {
             showLoader(true); currentUser = user;
-            if (user) {
-                getEl('notificationBtnEl').style.display = 'flex';
-                const uRef = ref(db, 'users/' + user.uid);
-                const snap = await get(uRef);
-                if (snap.exists()) { userProfile = snap.val(); } 
-                else {
-                    const sBonus = appSettings.signupBonus ?? 10;
-                    userProfile = { uid: user.uid, displayName: user.email?.split('@')[0], email: user.email, balance: sBonus, winningCash: 0, bonusCash: sBonus, referralCode: user.uid, joinedTournaments: {}, createdAt: serverTimestamp() };
-                    await set(uRef, userProfile);
-                }
-                updateUIForUser();
-                onValue(uRef, s => { if(s.exists()){ userProfile = s.val(); updateUIForUser(); } });
-                showSection(currentSectionId !== 'login-section' ? currentSectionId : 'home-section');
-                setupReferralSystem();
+            try {
+                if (user) {
+                    getEl('notificationBtnEl').style.display = 'flex';
+                    const uRef = ref(db, 'users/' + user.uid);
 
-                // FIX: Restore ZapUPI payment modal if user returned from payment page
-                // (sessionStorage persists across tab switches but not full page reloads on most mobile browsers)
-                try {
-                    const pending = sessionStorage.getItem('zapPending');
-                    if (pending) {
-                        const p = JSON.parse(pending);
-                        // Only restore if it belongs to this logged-in user
-                        if (p.uid === user.uid && p.txnRef && p.amount && p.token) {
-                            const createdAt = p.createdAt || 0;
-                            const elapsed = Date.now() - createdAt;
-                            if (createdAt && elapsed > ZAPUPI_TIMEOUT_MS) {
-                                // Payment window expired while user was away — mark as failed
-                                sessionStorage.removeItem('zapPending');
-                                (async () => {
-                                    try {
-                                        const userTxSnap = await get(ref(db, `users/${user.uid}/transactions`));
-                                        if (userTxSnap.exists()) {
-                                            userTxSnap.forEach(child => {
-                                                const v = child.val();
-                                                if (v.refId === p.depositKey && v.status === 'pending') {
-                                                    update(ref(db, `users/${user.uid}/transactions/${child.key}`), {
-                                                        status: 'failed',
-                                                        reason: 'Payment not completed within 10 minutes'
-                                                    });
-                                                }
-                                            });
-                                        }
-                                        if (p.depositKey) {
-                                            update(ref(db, `deposits/${p.depositKey}`), { status: 'failed' });
-                                        }
-                                    } catch(e) {}
-                                })();
-                            } else {
-                            // Small delay to let UI settle
-                            setTimeout(() => {
-                                showZapUpiPaymentModal(p.amount, p.txnRef, p.paymentUrl || '', p.depositKey, p.token);
-                                // Since we have no fresh paymentUrl, auto-trigger "return" state
-                                setTimeout(() => {
-                                    const checkBtn = document.getElementById('zapCheckStatusBtn');
-                                    const msgEl = document.getElementById('zapStatusMsg');
-                                    if (checkBtn) {
-                                        checkBtn.style.boxShadow = '0 0 0 4px rgba(45,125,255,0.20), 0 18px 42px rgba(45,125,255,0.34)';
-                                    }
-                                    if (msgEl) {
-                                        msgEl.style.color = 'rgba(226,238,255,0.72)';
-                                        msgEl.textContent = '👆 Welcome back! Tap Check Payment Status to verify your payment.';
-                                    }
-                                }, 400);
-                            }, 800);
-                            }
+                    // FIX (auto-logout): retry the initial read a couple of times. Right after
+                    // createUserWithEmailAndPassword(), the fresh auth token can take a moment to
+                    // propagate to the Realtime Database rules, so the very first get() can throw
+                    // permission-denied. That used to be uncaught and left the UI stuck on the
+                    // login screen forever (looked exactly like being logged out).
+                    let snap;
+                    for (let attempt = 0; attempt < 3; attempt++) {
+                        try { snap = await get(uRef); break; }
+                        catch (err) {
+                            if (attempt === 2) throw err;
+                            await new Promise(r => setTimeout(r, 400));
                         }
                     }
-                } catch(e) { sessionStorage.removeItem('zapPending'); }
-            } else { 
-                getEl('notificationBtnEl').style.display = 'none';
-                getEl('headerWalletChipEl').style.display='none'; 
-                document.querySelectorAll('.bottom-nav .nav-item').forEach(i=>i.style.display='none');
-                showSection('login-section'); 
+
+                    if (snap.exists()) {
+                        userProfile = snap.val();
+                    } else if (isSigningUp) {
+                        // FIX (Your Name bug): a signup is in flight and about to write the real
+                        // profile (with the typed name). Don't race it with a generic fallback —
+                        // just hold a temporary in-memory profile; the onValue listener below will
+                        // pick up the real one the instant the signup handler's set() lands.
+                        userProfile = { uid: user.uid, displayName: '...', email: user.email, balance: 0, winningCash: 0, bonusCash: 0, referralCode: user.uid, joinedTournaments: {} };
+                    } else {
+                        const sBonus = appSettings.signupBonus ?? 10;
+                        userProfile = { uid: user.uid, displayName: 'Your Name', email: user.email, balance: sBonus, winningCash: 0, bonusCash: sBonus, referralCode: user.uid, joinedTournaments: {}, createdAt: serverTimestamp() };
+                        await set(uRef, userProfile);
+                    }
+                    updateUIForUser();
+                    onValue(uRef, s => { if(s.exists()){ userProfile = s.val(); updateUIForUser(); } });
+                    showSection(currentSectionId !== 'login-section' ? currentSectionId : 'home-section');
+                    setupReferralSystem();
+
+                    // FIX: Restore ZapUPI payment modal if user returned from payment page
+                    // (sessionStorage persists across tab switches but not full page reloads on most mobile browsers)
+                    try {
+                        const pending = sessionStorage.getItem('zapPending');
+                        if (pending) {
+                            const p = JSON.parse(pending);
+                            // Only restore if it belongs to this logged-in user
+                            if (p.uid === user.uid && p.txnRef && p.amount && p.token) {
+                                // Small delay to let UI settle
+                                setTimeout(() => {
+                                    showZapUpiPaymentModal(p.amount, p.txnRef, '', p.depositKey, p.token);
+                                    // Since we have no fresh paymentUrl, auto-trigger "return" state
+                                    setTimeout(() => {
+                                        const checkBtn = document.getElementById('zapCheckStatusBtn');
+                                        const msgEl = document.getElementById('zapStatusMsg');
+                                        const payBtn = document.getElementById('zapOpenPayBtn');
+                                        if (payBtn) payBtn.style.display = 'none'; // hide re-open pay btn
+                                        if (checkBtn) {
+                                            checkBtn.style.background = 'rgba(16,185,129,0.3)';
+                                            checkBtn.style.boxShadow = '0 0 0 4px rgba(16,185,129,0.3)';
+                                        }
+                                        if (msgEl) {
+                                            msgEl.style.color = '#10b981';
+                                            msgEl.textContent = '👆 Welcome back! Tap Check Payment Status to verify your payment.';
+                                        }
+                                    }, 400);
+                                }, 800);
+                            }
+                        }
+                    } catch(e) { sessionStorage.removeItem('zapPending'); }
+                } else {
+                    getEl('notificationBtnEl').style.display = 'none';
+                    getEl('headerWalletChipEl').style.display='none';
+                    document.querySelectorAll('.bottom-nav .nav-item').forEach(i=>i.style.display='none');
+                    showSection('login-section');
+                }
+            } catch (err) {
+                // FIX (auto-logout): never let an error here strand the user on a spinner/blank
+                // login screen while they're actually still authenticated.
+                console.error('onAuthStateChanged error:', err);
+                if (user) alert('Something went wrong loading your profile. Please pull to refresh.');
+            } finally {
+                showLoader(false);
             }
-            showLoader(false);
         });
 
         getEl('loginEmailBtnEl').onclick = async () => {
@@ -2174,17 +1420,29 @@
         })();
 
         getEl('signupEmailBtnEl').onclick = async () => {
-            const name = getEl('signupNameInputEl').value, em = getEl('signupEmailInputEl').value, pw = getEl('signupPasswordInputEl').value;
+            const name = getEl('signupNameInputEl').value.trim(), em = getEl('signupEmailInputEl').value, pw = getEl('signupPasswordInputEl').value;
             if(!name || pw.length<6) return alert('Enter name and min 6 char password.');
             showLoader(true);
+            isSigningUp = true;
             try { 
                 const cred = await createUserWithEmailAndPassword(auth, em, pw);
                 const newUid = cred.user.uid;
                 // Store displayName and referredBy on new user profile
                 const referrerUid = getEl('signupReferralCodeInputEl').value.trim();
-                const profileUpdate = { displayName: name };
-                if (referrerUid) profileUpdate.referredBy = referrerUid;
-                await update(ref(db, `users/${newUid}`), profileUpdate);
+                // BUG FIX: Write the full profile with the typed name right away using set().
+                // createUserWithEmailAndPassword() fires onAuthStateChanged asynchronously, which
+                // also tries to create a profile if one doesn't exist yet (using a generic name
+                // as a fallback). The isSigningUp flag tells onAuthStateChanged to hold off on that
+                // fallback write entirely while this real write is in flight, closing the race
+                // that was overwriting the typed name with "Your Name".
+                const sBonus = appSettings.signupBonus ?? 10;
+                const profileData = {
+                    uid: newUid, displayName: name, email: em,
+                    balance: sBonus, winningCash: 0, bonusCash: sBonus,
+                    referralCode: newUid, joinedTournaments: {}, createdAt: serverTimestamp()
+                };
+                if (referrerUid) profileData.referredBy = referrerUid;
+                await set(ref(db, `users/${newUid}`), profileData);
                 // Write referral record to 'referrals' node (admin reads from here)
                 if (referrerUid) {
                     await push(ref(db, 'referrals'), {
@@ -2195,7 +1453,7 @@
                         timestamp: serverTimestamp()
                     });
                 }
-            } catch (e) { alert(e.message); } finally { showLoader(false); }
+            } catch (e) { alert(e.message); } finally { isSigningUp = false; showLoader(false); }
         };
 
         getEl('showSignupToggleBtnEl').onclick = () => { getEl('emailLoginForm').style.display='none'; getEl('emailSignupForm').style.display='block'; };
@@ -2218,7 +1476,7 @@
 
         function updateAppUIWithSettings() {
             getEl('referralBonusText').textContent = `₹${appSettings.referralBonus || 0}`;
-            const logoUrl = appSettings.logoUrl || 'https://i.ibb.co/QF0CmFm5/434788bb-f70b-4a9a-85b8-1967af083a80.png';
+            const logoUrl = appSettings.logoUrl || 'https://via.placeholder.com/100/18181b/06b6d4?text=LOGO';
             const appName = appSettings.appName || 'NK E SPORTS';
 
             // ── Splash Screen (shown once per session if admin set an image) ──
@@ -2350,7 +1608,7 @@
             const wrap = getEl('promotionSliderEl').querySelector('.swiper-wrapper');
             try { const snap = await get(ref(db, 'promotions')); const promos = Object.values(snap.val() || {}); wrap.innerHTML = '';
                 if(promos.length > 0) { promos.forEach(p => { const slide = (p.link && p.link.trim() !== '') ? `<div class="swiper-slide" style="cursor:pointer;"><a href="${p.link}" target="_blank" rel="noopener noreferrer" style="display:block;width:100%;height:100%;"><img src="${p.imageUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;"></a></div>` : `<div class="swiper-slide"><img src="${p.imageUrl}"></div>`; wrap.innerHTML += slide; });
-                    if(swiperInstance) swiperInstance.destroy(); swiperInstance = new Swiper(getEl('promotionSliderEl'), { loop: promos.length > 1, autoplay: promos.length > 1 ? {delay:3000} : false, pagination:{el:'.swiper-pagination'} });
+                    if(swiperInstance) swiperInstance.destroy(); swiperInstance = new Swiper(getEl('promotionSliderEl'), { loop: true, autoplay:{delay:3000}, pagination:{el:'.swiper-pagination'} });
                 } else getEl('promotionSliderEl').style.display = 'none';
             } catch(e) {}
         }
@@ -2494,101 +1752,65 @@
             });
 
             card.querySelector('.btn-results')?.addEventListener('click', e => { 
+                getEl('matchDetailsModalTitleEl').textContent = "Match Results - " + t.name; 
+                
+                let bodyHTML = '';
+
                 if(t.youtubeLink) {
-                    window.open(t.youtubeLink, '_blank');
+                    bodyHTML += `<a href="${t.youtubeLink}" target="_blank" class="btn btn-danger mb-3 w-100 fw-bold"><i class="bi bi-youtube"></i> Watch Highlights</a>`;
                 }
-                showMatchResultsPanel(id, t);
+
+                const players = Object.entries(t.registeredPlayers || {});
+
+                // Sort: highest winnings first, then highest kills, then lowest rank
+                players.sort(([, a], [, b]) => {
+                    const prizeA = a.prize || 0, prizeB = b.prize || 0;
+                    if (prizeB !== prizeA) return prizeB - prizeA;
+                    const killsA = a.kills || 0, killsB = b.kills || 0;
+                    if (killsB !== killsA) return killsB - killsA;
+                    const ra = a.rank, rb = b.rank;
+                    if (ra != null && rb != null) return ra - rb;
+                    if (ra != null) return -1;
+                    if (rb != null) return 1;
+                    return 0;
+                });
+
+                if (players.length === 0) {
+                    bodyHTML += `<p class="text-center text-muted small fw-bold py-4">No player data available for this match yet.</p>`;
+                } else {
+                    bodyHTML += `<p class="text-muted small mb-3">Ranked by Winnings &amp; Kills</p>`;
+                    bodyHTML += `<div class="glass-card p-0 overflow-hidden">`;
+                    players.forEach(([uid, p], idx) => {
+                        const isMe = currentUser && uid === currentUser.uid;
+                        const displayName = p.gameName || 'Player';
+                        const position = idx + 1;
+                        let rankDisplay = `#${position}`;
+                        if (position === 1) rankDisplay = '🥇';
+                        else if (position === 2) rankDisplay = '🥈';
+                        else if (position === 3) rankDisplay = '🥉';
+                        const kills = p.kills || 0;
+                        const prize = p.prize || 0;
+                        bodyHTML += `
+                            <div class="list-group-item d-flex justify-content-between align-items-center" style="${isMe ? 'background: rgba(6,182,212,0.08);' : ''}">
+                                <div class="d-flex align-items-center gap-2" style="min-width:0;">
+                                    <span style="width:28px; flex-shrink:0; text-align:center; font-weight:800;">${rankDisplay}</span>
+                                    <div style="min-width:0;">
+                                        <div class="fw-bold" style="color: var(--text-main); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${displayName}${isMe ? ' <span class="badge bg-primary ms-1" style="font-size:0.6rem;">YOU</span>' : ''}</div>
+                                        <div class="small text-muted">Kills ${kills}</div>
+                                    </div>
+                                </div>
+                                <strong style="color: var(--accent-gold); flex-shrink:0;">₹${prize}</strong>
+                            </div>
+                        `;
+                    });
+                    bodyHTML += `</div>`;
+                }
+                
+                getEl('matchDetailsModalBodyEl').innerHTML = bodyHTML; 
+                modals.matchDetails.show(); 
             });
             
             return card;
-        }
-
-        /* --- Floating Match Results Panel --- */
-        function closeMatchResultsPanel() {
-            const panel = document.getElementById('matchResultsPanelEl');
-            if (panel) {
-                panel.classList.remove('show');
-                setTimeout(() => panel.remove(), 300);
-            }
-            document.body.classList.remove('zap-pay-open');
-        }
-
-        function showMatchResultsPanel(tournamentId, t) {
-            let existing = document.getElementById('matchResultsPanelEl');
-            if (existing) existing.remove();
-
-            const players = Object.entries(t.registeredPlayers || {});
-
-            // Sort: highest winnings first, then highest kills, then lowest rank
-            players.sort(([, a], [, b]) => {
-                const prizeA = a.prize || 0, prizeB = b.prize || 0;
-                if (prizeB !== prizeA) return prizeB - prizeA;
-                const killsA = a.kills || 0, killsB = b.kills || 0;
-                if (killsB !== killsA) return killsB - killsA;
-                const ra = a.rank, rb = b.rank;
-                if (ra != null && rb != null) return ra - rb;
-                if (ra != null) return -1;
-                if (rb != null) return 1;
-                return 0;
-            });
-
-            let rowsHtml = '';
-            if (players.length === 0) {
-                rowsHtml = `<p class="text-center text-muted small fw-bold py-4">No player data available for this match yet.</p>`;
-            } else {
-                players.forEach(([uid, p], idx) => {
-                    const isMe = currentUser && uid === currentUser.uid;
-                    const displayName = p.gameName || 'Player';
-                    const position = idx + 1;
-                    let rankDisplay = `#${position}`;
-                    let rowExtraClass = '';
-                    if (position === 1) { rankDisplay = '🥇'; rowExtraClass = 'rank-1'; }
-                    else if (position === 2) { rankDisplay = '🥈'; rowExtraClass = 'rank-2'; }
-                    else if (position === 3) { rankDisplay = '🥉'; rowExtraClass = 'rank-3'; }
-                    const kills = p.kills || 0;
-                    const prize = p.prize || 0;
-                    rowsHtml += `
-                    <div class="match-result-row ${isMe ? 'is-me' : ''} ${rowExtraClass}">
-                        <div class="mr-rank">${rankDisplay}</div>
-                        <div class="mr-avatar"><img src="https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=18181b&color=06b6d4&bold=true" alt=""></div>
-                        <div class="mr-info">
-                            <div class="mr-name">${displayName}${isMe ? ' <span class="mr-you-badge">YOU</span>' : ''}</div>
-                            <div class="mr-uid">Kills ${kills} &nbsp;•&nbsp; Winnings ₹${prize}</div>
-                        </div>
-                        <div class="mr-stats">
-                            <div class="mr-kills"><i class="bi bi-crosshair"></i> ${kills}</div>
-                            <div class="mr-prize">₹${prize}</div>
-                        </div>
-                    </div>`;
-                });
-            }
-
-            const panel = document.createElement('div');
-            panel.id = 'matchResultsPanelEl';
-            panel.className = 'match-results-panel';
-            panel.innerHTML = `
-                <div class="match-results-card">
-                    <div class="mr-header">
-                        <div>
-                            <h5 class="mr-title">${t.name || 'Match Results'}</h5>
-                            <p class="mr-subtitle">Ranked by Winnings &amp; Kills</p>
-                        </div>
-                        <button type="button" class="mr-close-btn" id="closeMatchResultsBtn"><i class="bi bi-x-lg"></i></button>
-                    </div>
-                    <div class="mr-list">
-                        ${rowsHtml}
-                    </div>
-                </div>
-            `;
-            document.body.appendChild(panel);
-            document.body.classList.add('zap-pay-open');
-
-            requestAnimationFrame(() => panel.classList.add('show'));
-
-            document.getElementById('closeMatchResultsBtn').onclick = closeMatchResultsPanel;
-            panel.addEventListener('click', (e) => {
-                if (e.target === panel) closeMatchResultsPanel();
-            });
         }
 
         getEl('confirmJoinBtn').onclick = async () => {
@@ -2675,11 +1897,7 @@
             getEl('recharge-step-1-amount').style.display='none'; getEl('recharge-step-2-method').style.display='block';
         };
         document.querySelectorAll('.payment-option-card input[type="radio"]').forEach(radio => {
-            radio.addEventListener('change', function() {
-                document.querySelectorAll('.payment-option-card').forEach(c => c.classList.remove('active'));
-                this.closest('.payment-option-card').classList.add('active');
-                getEl('proceedToPayActionBtn').textContent = this.value === 'auto' ? 'Pay via ZapUPI' : 'Continue to Manual Payment';
-            });
+            radio.addEventListener('change', function() { document.querySelectorAll('.payment-option-card').forEach(c => c.classList.remove('active')); this.closest('.payment-option-card').classList.add('active'); });
         });
 
         getEl('proceedToPayActionBtn').onclick = () => {
@@ -2760,7 +1978,6 @@
             let depositKey = null;
             try {
                 const now = Date.now();
-                const txnPushRef = push(ref(db, `users/${currentUser.uid}/transactions`));
                 const depositRef = await push(ref(db, 'deposits'), {
                     userId: currentUser.uid,
                     userEmail: userProfile.email || '',
@@ -2770,19 +1987,18 @@
                     utr: txnRef,
                     paymentMethod: 'ZapUPI Auto',
                     status: 'pending',
-                    timestamp: serverTimestamp(),
-                    txnKey: txnPushRef.key
+                    timestamp: serverTimestamp()
                 });
                 depositKey = depositRef.key;
                 // BUG FIX: Write transaction record under user's own node so it's always readable
-                await set(txnPushRef, {
+                await push(ref(db, `users/${currentUser.uid}/transactions`), {
                     type: 'Deposit', amount: amount, status: 'pending',
-                    time: now, refId: depositKey, paymentMethod: 'ZapUPI'
+                    time: now, refId: depositKey
                 });
                 // FIX: Save pending payment details to sessionStorage so the modal can be
                 // restored if the user returns from the payment tab / page reload
                 sessionStorage.setItem('zapPending', JSON.stringify({
-                    amount, txnRef, depositKey, token, uid: currentUser.uid, paymentUrl, createdAt: now
+                    amount, txnRef, depositKey, token, uid: currentUser.uid
                 }));
             } catch(e) {}
 
@@ -3004,12 +2220,6 @@
                             window.removeEventListener('focus', focusHandler);
                             document.getElementById('zapStep1').style.display = 'none';
                             document.getElementById('zapStep3').style.display = 'block';
-                            // Auto-redirect to Wallet section shortly after the tick verify
-                            setTimeout(() => {
-                                const m = document.getElementById('zapupiPayModal');
-                                if (m) m.remove();
-                                showSection('wallet-section');
-                            }, 1800);
                         } catch(e) {
                             alert('Payment verified but wallet update failed: ' + e.message);
                         } finally {
@@ -3049,47 +2259,12 @@
             });
         }
 
-        /* --- Wallet Success Popup (shown after auto-verified ZapUPI payment) --- */
-        function showWalletSuccessPopup(amount) {
-            let existing = document.getElementById('walletSuccessPopupEl');
-            if (existing) existing.remove();
-
-            const amountText = Math.round(Number(amount) || 0);
-
-            const popup = document.createElement('div');
-            popup.id = 'walletSuccessPopupEl';
-            popup.className = 'wallet-success-popup';
-            popup.innerHTML = `
-                <div class="wallet-success-card">
-                    <div class="ws-checkmark"><i class="bi bi-check-lg"></i></div>
-                    <h4 class="ws-title">Payment Successful</h4>
-                    <p class="ws-message">₹${amountText} added to your wallet successfully</p>
-                    <button type="button" class="btn-custom btn-primary-gradient w-100" id="walletSuccessOkBtn">Okay</button>
-                </div>
-            `;
-            document.body.appendChild(popup);
-            requestAnimationFrame(() => popup.classList.add('show'));
-
-            function close() {
-                popup.classList.remove('show');
-                setTimeout(() => popup.remove(), 300);
-                showSection('wallet-section');
-            }
-
-            document.getElementById('walletSuccessOkBtn').onclick = close;
-            popup.addEventListener('click', (e) => { if (e.target === popup) close(); });
-        }
-
         getEl('rechargeSubmitBtn').onclick = async () => {
             const utr = getEl('rechargeUtrInput').value;
             if(!utr) return alert("Please enter UTR number.");
             showLoader(true);
             try {
                 const now = Date.now();
-                // Generate the transaction key up-front (no write yet) so we can
-                // include it in the deposit's initial write, avoiding a second
-                // update to an existing deposit node (blocked by security rules).
-                const manualTxnRef = push(ref(db, `users/${currentUser.uid}/transactions`));
                 const dpRef = await push(ref(db, 'deposits'), {
                     userId: currentUser.uid,
                     userEmail: userProfile.email || '',
@@ -3098,14 +2273,13 @@
                     utr: utr,
                     status: 'pending',
                     paymentMethod: 'Manual UPI',
-                    timestamp: serverTimestamp(),
-                    txnKey: manualTxnRef.key
+                    timestamp: serverTimestamp()
                 });
                 // BUG FIX: Write transaction record under user's own node so it's always readable
                 // regardless of Firebase security rules on the root 'deposits' node.
-                await set(manualTxnRef, {
+                await push(ref(db, `users/${currentUser.uid}/transactions`), {
                     type: 'Deposit', amount: finalRechargeAmt, status: 'pending',
-                    time: now, refId: dpRef.key, paymentMethod: 'Manual UPI'
+                    time: now, refId: dpRef.key
                 });
                 alert("Deposit requested! Admin will verify soon.");
                 showSection('wallet-section');
@@ -3134,13 +2308,10 @@
                 const wdRef = await push(ref(db, 'withdrawals'), { userId: currentUser.uid, amount: amt, method: 'Direct', methodDetails: {accountInfo: details}, status: 'pending', requestTimestamp: serverTimestamp() });
                 // BUG FIX: Write transaction record under user's own node so it's always readable
                 // regardless of Firebase security rules on the root 'withdrawals' node.
-                const wdTxnRef = await push(ref(db, `users/${currentUser.uid}/transactions`), {
+                await push(ref(db, `users/${currentUser.uid}/transactions`), {
                     type: 'Withdraw', amount: amt, status: 'pending',
                     time: now, refId: wdRef.key
                 });
-                // FIX: Link this transaction record back to the withdrawal record so the
-                // admin/staff panel can update its status (and refund/reason) on approve/reject.
-                await update(ref(db, `withdrawals/${wdRef.key}`), { txnKey: wdTxnRef.key });
                 modals.withdraw.hide(); alert("Withdrawal Requested!"); showSection('wallet-section');
             } catch(e) { alert("Error: " + e.message); } showLoader(false);
         };
@@ -3150,8 +2321,6 @@
         // which fails silently when Firebase security rules deny reading the full collection.
         // Fix: Primary source is users/{uid}/transactions (user always has read access to own data).
         // Fallback: attempt root-node queries for backward compatibility with older records.
-        const ZAPUPI_TIMEOUT_MS = 10 * 60 * 1000; // 10 minutes
-
         async function fetchUserTransactions() {
             let transactions = [];
             if(!currentUser) return transactions;
@@ -3159,40 +2328,16 @@
             // PRIMARY: Read from user's own transactions node (always accessible)
             const userTxnSnap = await get(ref(db, `users/${currentUser.uid}/transactions`));
             if (userTxnSnap.exists()) {
-                const now = Date.now();
-                const entries = Object.entries(userTxnSnap.val());
-
-                for (const [key, t] of entries) {
-                    let status = t.status || 'pending';
-                    const time = typeof t.time === 'number' ? t.time : Date.now();
-
-                    // AUTO-FAIL: ZapUPI deposits stuck in "pending" for over 10 minutes
-                    // (e.g. user cancelled/backed out of the payment page without paying)
-                    // are marked as Failed so they don't clutter the wallet as pending forever.
-                    if (status === 'pending' && t.type === 'Deposit' &&
-                        t.paymentMethod && t.paymentMethod.toLowerCase().includes('zapupi') &&
-                        (now - time) > ZAPUPI_TIMEOUT_MS) {
-                        status = 'failed';
-                        try {
-                            await update(ref(db, `users/${currentUser.uid}/transactions/${key}`), {
-                                status: 'failed',
-                                reason: 'Payment not completed within 10 minutes'
-                            });
-                            if (t.refId) {
-                                await update(ref(db, `deposits/${t.refId}`), { status: 'failed' });
-                            }
-                        } catch(e) {}
-                    }
-
+                Object.values(userTxnSnap.val()).forEach(t => {
+                    // BUG FIX: serverTimestamp() stored as number in DB; use Date.now() fallback
+                    // so records with unresolved server timestamps still appear
                     transactions.push({
                         type: t.type,
                         amount: t.amount,
-                        status: status,
-                        time: time,
-                        reason: t.reason || (status === 'failed' && t.status === 'pending' ? 'Payment not completed within 10 minutes' : null),
-                        paymentMethod: t.paymentMethod || null
+                        status: t.status || 'pending',
+                        time: typeof t.time === 'number' ? t.time : Date.now()
                     });
-                }
+                });
             }
 
             // FALLBACK: Also try querying root nodes for older records (pre-fix)
@@ -3240,14 +2385,7 @@
                 const color = isDeposit ? 'var(--success-color, #10b981)' : (isEntryFee ? 'var(--accent-purple, #1F51FF)' : 'var(--danger-color, #ef4444)');
                 const icon = isDeposit ? 'bi-arrow-down-left-circle-fill' : (isEntryFee ? 'bi-controller' : 'bi-arrow-up-right-circle-fill');
 
-                let typeLabel = txn.type;
-                if (isDeposit && txn.paymentMethod) {
-                    if (txn.paymentMethod.toLowerCase().includes('zapupi')) typeLabel = 'Added via ZapUPI';
-                    else if (txn.paymentMethod.toLowerCase().includes('manual')) typeLabel = 'Added via Manual UPI';
-                }
-
                 let statusBadge = '';
-                let reasonLine = '';
                 if (txn.status === 'completed' || txn.status === 'success') {
                     statusBadge = '<span class="badge bg-success bg-opacity-25 text-success ms-2" style="font-size: 0.65rem;">Success</span>';
                 } else if (txn.status === 'pending') {
@@ -3255,9 +2393,6 @@
                 } else {
                     // Covers 'failed', 'rejected', or any other terminal non-success status
                     statusBadge = '<span class="badge bg-danger bg-opacity-25 text-danger ms-2" style="font-size: 0.65rem;">Failed</span>';
-                    if (txn.reason) {
-                        reasonLine = `<span style="font-size: 0.7rem; color: var(--danger-color, #ef4444); font-weight: 600; display: block;"><i class="bi bi-info-circle"></i> ${txn.reason}</span>`;
-                    }
                 }
 
                 historyList.innerHTML += `
@@ -3265,9 +2400,8 @@
                         <div class="d-flex align-items-center gap-3">
                             <i class="bi ${icon} fs-3" style="color: ${color};"></i>
                             <div>
-                                <h6 style="color: var(--text-main);" class="fw-bold mb-0 m-0 d-flex align-items-center">${typeLabel} ${statusBadge}</h6>
+                                <h6 style="color: var(--text-main);" class="fw-bold mb-0 m-0 d-flex align-items-center">${txn.type} ${statusBadge}</h6>
                                 <span style="font-size: 0.7rem; color: var(--text-muted); font-weight: 600;">${formatDate(txn.time)}</span>
-                                ${reasonLine}
                             </div>
                         </div>
                         <div class="text-end">
