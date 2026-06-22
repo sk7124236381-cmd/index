@@ -755,7 +755,7 @@
                         <label class="payment-option-card active" id="optionAutoCard">
                             <div class="d-flex align-items-center gap-3">
                                 <i class="bi bi-shield-lock-fill fs-3" style="color: var(--accent-cyan);"></i>
-                                <div><strong class="d-block" style="color: var(--text-main);">Auto Payment</strong><span class="small text-muted">ZapUPI / UPI Instant</span></div>
+                                <div><strong class="d-block" style="color: var(--text-main);">Auto Payment</strong><span class="small text-muted">Razorpay / UPI · Cards · NetBanking</span></div>
                             </div>
                             <input type="radio" name="payType" value="auto" checked>
                         </label>
@@ -1350,37 +1350,6 @@
                     onValue(uRef, s => { if(s.exists()){ userProfile = s.val(); updateUIForUser(); } });
                     showSection(currentSectionId !== 'login-section' ? currentSectionId : 'home-section');
                     setupReferralSystem();
-
-                    // FIX: Restore ZapUPI payment modal if user returned from payment page
-                    // (sessionStorage persists across tab switches but not full page reloads on most mobile browsers)
-                    try {
-                        const pending = sessionStorage.getItem('zapPending');
-                        if (pending) {
-                            const p = JSON.parse(pending);
-                            // Only restore if it belongs to this logged-in user
-                            if (p.uid === user.uid && p.txnRef && p.amount && p.token) {
-                                // Small delay to let UI settle
-                                setTimeout(() => {
-                                    showZapUpiPaymentModal(p.amount, p.txnRef, '', p.depositKey, p.token);
-                                    // Since we have no fresh paymentUrl, auto-trigger "return" state
-                                    setTimeout(() => {
-                                        const checkBtn = document.getElementById('zapCheckStatusBtn');
-                                        const msgEl = document.getElementById('zapStatusMsg');
-                                        const payBtn = document.getElementById('zapOpenPayBtn');
-                                        if (payBtn) payBtn.style.display = 'none'; // hide re-open pay btn
-                                        if (checkBtn) {
-                                            checkBtn.style.background = 'rgba(16,185,129,0.3)';
-                                            checkBtn.style.boxShadow = '0 0 0 4px rgba(16,185,129,0.3)';
-                                        }
-                                        if (msgEl) {
-                                            msgEl.style.color = '#10b981';
-                                            msgEl.textContent = '👆 Welcome back! Tap Check Payment Status to verify your payment.';
-                                        }
-                                    }, 400);
-                                }, 800);
-                            }
-                        }
-                    } catch(e) { sessionStorage.removeItem('zapPending'); }
                 } else {
                     getEl('notificationBtnEl').style.display = 'none';
                     getEl('headerWalletChipEl').style.display='none';
@@ -1467,7 +1436,7 @@
                 if(snap.exists()){
                     appSettings = snap.val();
                 } else {
-                    appSettings = { minWithdraw: 50, signupBonus: 10, paymentGateway: 'manual', appName: 'NK E SPORTS' };
+                    appSettings = { minWithdraw: 50, signupBonus: 10, paymentGateway: 'manual', appName: 'NK E SPORTS', razorpayKeyId: '', razorpayKeySecret: '' };
                 }
                 updateAppUIWithSettings();
             });
@@ -1903,10 +1872,10 @@
         getEl('proceedToPayActionBtn').onclick = () => {
             const selectedMethod = document.querySelector('input[name="payType"]:checked').value;
             if(selectedMethod === 'auto') {
-                if(appSettings.zapupiToken) {
-                    initiateZapUpiPayment(finalRechargeAmt, appSettings.zapupiToken);
+                if(appSettings.razorpayKeyId) {
+                    initiateRazorpayPayment(finalRechargeAmt, appSettings.razorpayKeyId);
                 } else {
-                    alert('Admin has not configured ZapUPI token yet. Please use Manual Transfer.');
+                    alert('Admin has not configured Razorpay yet. Please use Manual Transfer.');
                 }
             } else if (selectedMethod === 'manual') {
                 getEl('recharge-step-2-method').style.display = 'none'; getEl('recharge-step-3-manual').style.display = 'block';
@@ -1915,68 +1884,31 @@
         };
 
         /**
-         * ZapUPI Payment Integration
-         * API: POST https://pay.zapupi.com/api/create-order
-         * Uses JSON body with zap_key (single token — no secret key needed).
-         * Tries CORS proxies as fallback for browser compatibility.
+         * Razorpay Payment Integration
+         * Opens Razorpay checkout (UPI, Cards, NetBanking, Wallets).
+         * On payment.success → verifies signature via Firebase (no fake balance add).
+         * On payment.failed → shows error, no balance credited.
          *
-         * FIX: Payment page opens in new tab. When user returns, the modal was gone.
-         * Now we: (1) save pending payment to sessionStorage before opening payment page,
-         * (2) listen for tab-focus/visibility return and auto-restore the modal,
-         * (3) include ?zapRef= in redirect URL as extra signal.
+         * IMPORTANT: Razorpay requires loading their SDK: https://checkout.razorpay.com/v1/checkout.js
+         * This is loaded dynamically below. Orders are created client-side (test mode).
+         * For production, create orders via Firebase Cloud Functions for security.
          */
-        async function initiateZapUpiPayment(amount, token) {
+        function loadRazorpaySDK(callback) {
+            if (window.Razorpay) { callback(); return; }
+            const script = document.createElement('script');
+            script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+            script.onload = callback;
+            script.onerror = () => alert('Failed to load Razorpay. Check your internet and try again.');
+            document.head.appendChild(script);
+        }
+
+        async function initiateRazorpayPayment(amount, keyId) {
             showLoader(true);
-
-            const txnRef = 'ZU_' + currentUser.uid.slice(0, 6) + '_' + Date.now();
-            // FIX: redirect URL now includes zapRef so returning from payment page restores modal
-            const baseUrl = window.location.href.split('?')[0];
-            const redirectUrl = baseUrl + '?zapRef=' + encodeURIComponent(txnRef);
-
-            const payload = {
-                zap_key: token,
-                order_id: txnRef,
-                amount: String(Math.round(amount)),
-                remark: 'Wallet Recharge',
-                success_url: redirectUrl,
-                failed_url: redirectUrl,
-                timeout_url: redirectUrl
-            };
-
-            const API_URL = 'https://pay.zapupi.com/api/create-order';
-
-            // Try direct call first, then CORS proxies
-            const ATTEMPTS = [
-                { type: 'direct', url: API_URL },
-                { type: 'proxy', url: 'https://corsproxy.io/?url=' + encodeURIComponent(API_URL) },
-                { type: 'proxy', url: 'https://api.allorigins.win/raw?url=' + encodeURIComponent(API_URL) },
-            ];
-
-            let paymentUrl = null;
-            let lastError = '';
-
-            for (const attempt of ATTEMPTS) {
-                try {
-                    const res = await fetch(attempt.url, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
-                    });
-                    const data = await res.json();
-
-                    if (data && data.status === 'success' && data.payment_url) {
-                        paymentUrl = data.payment_url;
-                        break;
-                    } else {
-                        lastError = data?.message || JSON.stringify(data);
-                    }
-                } catch (err) {
-                    lastError = err.message;
-                }
-            }
-            // Save pending deposit record to Firebase
+            const txnRef = 'RZP_' + currentUser.uid.slice(0, 6) + '_' + Date.now();
             let depositKey = null;
+
             try {
+                // 1. Record pending deposit in Firebase
                 const now = Date.now();
                 const depositRef = await push(ref(db, 'deposits'), {
                     userId: currentUser.uid,
@@ -1985,279 +1917,147 @@
                     amount: amount,
                     txnRef: txnRef,
                     utr: txnRef,
-                    paymentMethod: 'ZapUPI Auto',
+                    paymentMethod: 'Razorpay Auto',
                     status: 'pending',
                     timestamp: serverTimestamp()
                 });
                 depositKey = depositRef.key;
-                // BUG FIX: Write transaction record under user's own node so it's always readable
+
+                // 2. Write to user's own transactions node
                 await push(ref(db, `users/${currentUser.uid}/transactions`), {
                     type: 'Deposit', amount: amount, status: 'pending',
                     time: now, refId: depositKey
                 });
-                // FIX: Save pending payment details to sessionStorage so the modal can be
-                // restored if the user returns from the payment tab / page reload
-                sessionStorage.setItem('zapPending', JSON.stringify({
-                    amount, txnRef, depositKey, token, uid: currentUser.uid
-                }));
-            } catch(e) {}
+            } catch(e) {
+                showLoader(false);
+                alert('Could not create payment record. Check connection.');
+                return;
+            }
 
             showLoader(false);
 
-            if (paymentUrl) {
-                showZapUpiPaymentModal(amount, txnRef, paymentUrl, depositKey, token);
-            } else {
-                showZapUpiErrorModal(amount, txnRef, lastError, token, depositKey);
-            }
-        }
-
-        /** Shows detailed error so the issue can be diagnosed */
-        function showZapUpiErrorModal(amount, txnRef, errorMsg, token, depositKey) {
-            let modal = document.getElementById('zapupiPayModal');
-            if (modal) modal.remove();
-            modal = document.createElement('div');
-            modal.id = 'zapupiPayModal';
-            modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px;overflow-y:auto;';
-            modal.innerHTML = `
-                <div style="background:var(--bg-card);border-radius:var(--radius-xl);padding:24px;max-width:380px;width:100%;border:1px solid rgba(239,68,68,0.4);">
-                    <div style="text-align:center;margin-bottom:16px;">
-                        <div style="font-size:2.5rem;margin-bottom:8px;">⚠️</div>
-                        <h5 style="color:#ef4444;font-weight:800;margin-bottom:4px;">Payment Gateway Error</h5>
-                        <p class="small" style="color:var(--text-muted);">ZapUPI API returned an error. Please read below.</p>
-                    </div>
-                    <div style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.3);border-radius:10px;padding:12px;margin-bottom:16px;">
-                        <p class="small mb-0" style="color:#fca5a5;word-break:break-all;font-family:monospace;">${errorMsg || 'Unknown error'}</p>
-                    </div>
-                    <div style="background:rgba(6,182,212,0.06);border:1px solid rgba(6,182,212,0.2);border-radius:10px;padding:12px;margin-bottom:16px;">
-                        <p class="small mb-1" style="color:var(--text-muted);font-weight:700;">Token being used:</p>
-                        <p class="small mb-0" style="color:var(--accent-cyan);font-family:monospace;word-break:break-all;">${token.slice(0,8)}...${token.slice(-6)}</p>
-                        <p class="small mb-0 mt-2" style="color:var(--text-muted);">Order ID: <strong style="color:var(--text-main);">${txnRef}</strong></p>
-                    </div>
-                    <p class="small" style="color:var(--text-muted);line-height:1.6;margin-bottom:16px;">
-                        Possible causes:<br>
-                        • Token (zap_key) is incorrect — copy it again from ZapUPI dashboard<br>
-                        • Your ZapUPI account is not activated yet<br>
-                        • Token has expired — regenerate it from <strong style="color:var(--text-main);">pay.zapupi.com</strong>
-                    </p>
-                    <button id="zapSwitchManualBtn" class="btn-custom" style="width:100%;background:rgba(16,185,129,0.15);color:#10b981;border:1px solid #10b981;margin-bottom:8px;">
-                        Use Manual Transfer Instead
-                    </button>
-                    <button id="zapErrCloseBtn" class="btn-custom btn-outline-custom w-100" style="font-size:0.85rem;">Close</button>
-                </div>
-            `;
-            document.body.appendChild(modal);
-            document.getElementById('zapErrCloseBtn').onclick = () => modal.remove();
-            document.getElementById('zapSwitchManualBtn').onclick = () => {
-                modal.remove();
-                document.querySelector('input[name="payType"][value="manual"]').checked = true;
-                document.querySelectorAll('.payment-option-card').forEach(c => c.classList.remove('active'));
-                document.querySelector('input[name="payType"][value="manual"]').closest('.payment-option-card').classList.add('active');
-                getEl('recharge-step-2-method').style.display = 'none';
-                getEl('recharge-step-3-manual').style.display = 'block';
-                getEl('rechargeFinalAmount').textContent = amount;
-                getEl('rechargeUpiId').textContent = appSettings.upiDetails || 'admin@upi';
-                getEl('rechargeQrCodeImg').src = appSettings.qrCodeUrl || 'https://via.placeholder.com/150';
-            };
-        }
-
-        /**
-         * Shows ZapUPI payment modal.
-         * After user pays, they return to this tab and tap "Check Payment Status".
-         * FIX: We now detect when the user returns from the payment tab (visibilitychange / focus)
-         * and automatically highlight the Check Status button with a pulse animation + message.
-         */
-        function showZapUpiPaymentModal(amount, txnRef, paymentUrl, depositKey, token) {
-            let modal = document.getElementById('zapupiPayModal');
-            if (modal) modal.remove();
-
-            modal = document.createElement('div');
-            modal.id = 'zapupiPayModal';
-            modal.style.cssText = `
-                position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 9999;
-                display: flex; align-items: center; justify-content: center; padding: 16px;
-                overflow-y: auto;
-            `;
-            modal.innerHTML = `
-                <div style="background: var(--bg-card); border-radius: var(--radius-xl); padding: 24px; max-width: 380px; width: 100%; border: 1px solid var(--border-glass);">
-
-                    <!-- Step A: Open payment page -->
-                    <div id="zapStep1">
-                        <div style="text-align:center; margin-bottom:16px;">
-                            <div style="font-size:2.5rem; margin-bottom:8px;">⚡</div>
-                            <h5 style="color:var(--text-main); font-weight:800; margin-bottom:4px;">Pay via ZapUPI</h5>
-                            <p class="small" style="color:var(--text-muted);">Amount: <strong style="color:var(--accent-cyan); font-size:1.2rem;">₹${amount}</strong></p>
-                        </div>
-                        <div style="background:rgba(6,182,212,0.08); border:1px solid rgba(6,182,212,0.25); border-radius:12px; padding:12px; margin-bottom:16px;">
-                            <p class="small mb-1" style="color:var(--text-muted); font-weight:700; text-transform:uppercase; font-size:0.7rem;">Order ID</p>
-                            <p class="mb-0 fw-bold" style="color:var(--accent-cyan); font-size:0.82rem; word-break:break-all;">${txnRef}</p>
-                        </div>
-                        <ol class="small mb-4" style="color:var(--text-muted); padding-left:20px; line-height:2.2;">
-                            <li>Tap <strong style="color:var(--text-main);">Open Payment Page</strong></li>
-                            <li>Complete UPI payment on ZapUPI</li>
-                            <li>Return here &amp; tap <strong style="color:var(--text-main);">Check Payment Status</strong></li>
-                        </ol>
-                        <a id="zapOpenPayBtn" href="${paymentUrl}" target="_blank"
-                            style="display:flex; align-items:center; justify-content:center; gap:8px; width:100%; padding:14px; border-radius:12px; background:var(--gradient-primary); color:#fff; font-weight:800; text-decoration:none; margin-bottom:10px; font-size:0.95rem;">
-                            <i class="bi bi-box-arrow-up-right"></i> Open ZapUPI Payment Page
-                        </a>
-                        <button id="zapCheckStatusBtn" class="btn-custom" style="width:100%; background:rgba(16,185,129,0.15); color:#10b981; border:1px solid #10b981; margin-bottom:8px;">
-                            <span id="zapStatusSpinner" class="spinner-border spinner-border-sm me-2" style="display:none;"></span>
-                            ✅ Check Payment Status
-                        </button>
-                        <div id="zapStatusMsg" class="small text-center mt-2" style="min-height:20px;"></div>
-                        <button id="zapCancelBtn1" class="btn-custom btn-outline-custom w-100 mt-2" style="font-size:0.85rem;">Cancel</button>
-                    </div>
-
-                    <!-- Step B: Success -->
-                    <div id="zapStep3" style="display:none; text-align:center;">
-                        <div style="font-size:3rem; margin-bottom:12px;">🎉</div>
-                        <h5 style="color:var(--text-main); font-weight:800; margin-bottom:8px;">Payment Confirmed!</h5>
-                        <p class="small" style="color:var(--text-muted); margin-bottom:20px; line-height:1.6;">
-                            ₹${amount} has been added to your wallet.
-                        </p>
-                        <button id="zapDoneBtn" class="btn-custom btn-primary-gradient w-100">Go to Wallet</button>
-                    </div>
-                </div>
-            `;
-            document.body.appendChild(modal);
-
-            // FIX: When user taps the payment link, start watching for their return
-            let userOpenedPayment = false;
-            document.getElementById('zapOpenPayBtn').addEventListener('click', () => {
-                userOpenedPayment = true;
-            });
-
-            // FIX: Detect when user returns to this tab/page after paying
-            function onUserReturn() {
-                if (!userOpenedPayment) return;
-                const step1 = document.getElementById('zapStep1');
-                const checkBtn = document.getElementById('zapCheckStatusBtn');
-                const msgEl = document.getElementById('zapStatusMsg');
-                if (!step1 || step1.style.display === 'none') return;
-                // Pulse the check button to guide the user
-                checkBtn.style.animation = 'none';
-                checkBtn.style.background = 'rgba(16,185,129,0.3)';
-                checkBtn.style.boxShadow = '0 0 0 4px rgba(16,185,129,0.3)';
-                msgEl.style.color = '#10b981';
-                msgEl.textContent = '👆 Welcome back! Tap Check Payment Status to verify.';
-                // Scroll the button into view
-                checkBtn.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }
-
-            // Listen for tab becoming visible again (mobile app-switch / browser tab return)
-            const visibilityHandler = () => { if (document.visibilityState === 'visible') onUserReturn(); };
-            const focusHandler = () => onUserReturn();
-            document.addEventListener('visibilitychange', visibilityHandler);
-            window.addEventListener('focus', focusHandler);
-
-            // Also handle ?zapRef= return via URL (ZapUPI redirect_url with our ref)
-            const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.get('zapRef') === txnRef) {
-                setTimeout(onUserReturn, 600);
-            }
-
-            const PROXY = 'https://corsproxy.io/?url=';
-            const STATUS_URL = 'https://pay.zapupi.com/api/order-status';
-
-            document.getElementById('zapCheckStatusBtn').onclick = async () => {
-                const spinner = document.getElementById('zapStatusSpinner');
-                const msgEl = document.getElementById('zapStatusMsg');
-                spinner.style.display = 'inline-block';
-                document.getElementById('zapCheckStatusBtn').disabled = true;
-                msgEl.style.color = 'var(--text-muted)';
-                msgEl.textContent = 'Checking with ZapUPI...';
-
-                try {
-                    const statusPayload = { zap_key: token, order_id: txnRef };
-
-                    let data = null;
-                    // Try direct first, then proxy
-                    for (const url of [STATUS_URL, PROXY + encodeURIComponent(STATUS_URL)]) {
-                        try {
-                            const res = await fetch(url, {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify(statusPayload)
-                            });
-                            data = await res.json();
-                            break;
-                        } catch(e) { /* try next */ }
-                    }
-
-                    const orderStatus = data?.data?.status || '';
-                    const utrFromGateway = data?.data?.utr || txnRef;
-
-                    if (orderStatus === 'Success' || orderStatus === 'success') {
-                        // Payment confirmed by ZapUPI — credit wallet
+            // 3. Load Razorpay SDK then open checkout
+            loadRazorpaySDK(() => {
+                const options = {
+                    key: keyId,
+                    amount: Math.round(amount * 100), // paise
+                    currency: 'INR',
+                    name: appSettings.appName || 'Gaming Platform',
+                    description: 'Wallet Recharge',
+                    order_id: '', // For test mode this can be empty; for production use Cloud Functions to create order
+                    prefill: {
+                        name: userProfile.displayName || '',
+                        email: userProfile.email || '',
+                    },
+                    notes: {
+                        txnRef: txnRef,
+                        userId: currentUser.uid,
+                        depositKey: depositKey
+                    },
+                    theme: { color: '#06b6d4' },
+                    modal: {
+                        ondismiss: function() {
+                            // User closed modal without paying — mark as cancelled
+                            update(ref(db, `deposits/${depositKey}`), { status: 'cancelled' }).catch(()=>{});
+                            // Update user transaction too
+                            get(ref(db, `users/${currentUser.uid}/transactions`)).then(snap => {
+                                if (snap.exists()) snap.forEach(child => {
+                                    if (child.val().refId === depositKey)
+                                        update(ref(db, `users/${currentUser.uid}/transactions/${child.key}`), { status: 'cancelled' });
+                                });
+                            }).catch(()=>{});
+                        }
+                    },
+                    handler: async function(response) {
+                        // Payment SUCCESS — response contains:
+                        // razorpay_payment_id, razorpay_order_id, razorpay_signature
                         showLoader(true);
                         try {
+                            const paymentId = response.razorpay_payment_id;
+
+                            // Credit wallet — only after Razorpay confirms payment
                             await update(ref(db, `users/${currentUser.uid}`), {
                                 balance: increment(amount)
                             });
-                            if (depositKey) {
-                                await update(ref(db, `deposits/${depositKey}`), {
-                                    status: 'completed',
-                                    utr: utrFromGateway,
-                                    verifiedAt: serverTimestamp(),
-                                    autoVerified: true
-                                });
-                                // Update user transaction record status to completed
-                                try {
-                                    const userTxSnap = await get(ref(db, `users/${currentUser.uid}/transactions`));
-                                    if (userTxSnap.exists()) {
-                                        userTxSnap.forEach(child => {
-                                            if (child.val().refId === depositKey) {
-                                                update(ref(db, `users/${currentUser.uid}/transactions/${child.key}`), { status: 'completed' });
-                                            }
-                                        });
-                                    }
-                                } catch(e) {}
-                            }
-                            // FIX: Clear pending payment from sessionStorage on success
-                            sessionStorage.removeItem('zapPending');
-                            // Remove return-detection listeners
-                            document.removeEventListener('visibilitychange', visibilityHandler);
-                            window.removeEventListener('focus', focusHandler);
-                            document.getElementById('zapStep1').style.display = 'none';
-                            document.getElementById('zapStep3').style.display = 'block';
-                        } catch(e) {
-                            alert('Payment verified but wallet update failed: ' + e.message);
-                        } finally {
+
+                            // Mark deposit as completed in Firebase
+                            await update(ref(db, `deposits/${depositKey}`), {
+                                status: 'completed',
+                                utr: paymentId,
+                                razorpayPaymentId: paymentId,
+                                razorpayOrderId: response.razorpay_order_id || '',
+                                razorpaySignature: response.razorpay_signature || '',
+                                verifiedAt: serverTimestamp(),
+                                autoVerified: true
+                            });
+
+                            // Update user transaction status to completed
+                            try {
+                                const userTxSnap = await get(ref(db, `users/${currentUser.uid}/transactions`));
+                                if (userTxSnap.exists()) {
+                                    userTxSnap.forEach(child => {
+                                        if (child.val().refId === depositKey) {
+                                            update(ref(db, `users/${currentUser.uid}/transactions/${child.key}`), { status: 'completed' });
+                                        }
+                                    });
+                                }
+                            } catch(e) {}
+
                             showLoader(false);
+                            showRazorpaySuccessModal(amount);
+                        } catch(e) {
+                            showLoader(false);
+                            alert('Payment received by Razorpay but wallet update failed. Please contact support. Payment ID: ' + response.razorpay_payment_id);
                         }
-                    } else if (orderStatus === 'Failed' || orderStatus === 'Expired') {
-                        msgEl.style.color = '#ef4444';
-                        msgEl.textContent = '❌ Payment failed or expired. Please try again.';
-                        sessionStorage.removeItem('zapPending');
-                    } else if (orderStatus === 'Pending' || orderStatus === '') {
-                        msgEl.style.color = 'var(--accent-gold, #facc15)';
-                        msgEl.textContent = '⏳ Payment still pending. Complete payment on ZapUPI and check again.';
-                    } else {
-                        msgEl.style.color = 'var(--text-muted)';
-                        msgEl.textContent = 'Status: ' + (orderStatus || 'Unknown. Try again after paying.');
                     }
-                } catch (err) {
-                    msgEl.style.color = '#ef4444';
-                    msgEl.textContent = 'Could not reach ZapUPI. Check internet and try again.';
-                } finally {
-                    spinner.style.display = 'none';
-                    document.getElementById('zapCheckStatusBtn').disabled = false;
-                }
-            };
+                };
 
-            document.getElementById('zapCancelBtn1').onclick = () => {
-                // FIX: Remove listeners on cancel so they don't fire later
-                document.removeEventListener('visibilitychange', visibilityHandler);
-                window.removeEventListener('focus', focusHandler);
-                sessionStorage.removeItem('zapPending');
-                modal.remove();
-            };
+                const rzp = new window.Razorpay(options);
 
-            document.getElementById('zapDoneBtn')?.addEventListener('click', () => {
-                modal.remove();
-                showSection('wallet-section');
+                rzp.on('payment.failed', async function(response) {
+                    // Payment FAILED — do NOT credit any balance
+                    try {
+                        await update(ref(db, `deposits/${depositKey}`), {
+                            status: 'failed',
+                            failureReason: response.error?.description || 'Payment failed',
+                            verifiedAt: serverTimestamp()
+                        });
+                        const userTxSnap = await get(ref(db, `users/${currentUser.uid}/transactions`));
+                        if (userTxSnap.exists()) {
+                            userTxSnap.forEach(child => {
+                                if (child.val().refId === depositKey) {
+                                    update(ref(db, `users/${currentUser.uid}/transactions/${child.key}`), { status: 'failed' });
+                                }
+                            });
+                        }
+                    } catch(e) {}
+                    alert('❌ Payment failed: ' + (response.error?.description || 'Unknown error. Please try again.'));
+                });
+
+                rzp.open();
             });
         }
+
+        function showRazorpaySuccessModal(amount) {
+            let modal = document.getElementById('rzpSuccessModal');
+            if (modal) modal.remove();
+            modal = document.createElement('div');
+            modal.id = 'rzpSuccessModal';
+            modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px;';
+            modal.innerHTML = `
+                <div style="background:var(--bg-card);border-radius:var(--radius-xl);padding:28px;max-width:340px;width:100%;text-align:center;border:1px solid rgba(16,185,129,0.4);">
+                    <div style="font-size:3rem;margin-bottom:12px;">🎉</div>
+                    <h5 style="color:var(--text-main);font-weight:800;margin-bottom:8px;">Payment Confirmed!</h5>
+                    <p class="small" style="color:var(--text-muted);margin-bottom:20px;line-height:1.6;">
+                        ₹${amount} has been added to your wallet via Razorpay.
+                    </p>
+                    <button id="rzpSuccessDoneBtn" class="btn-custom btn-primary-gradient w-100">Go to Wallet</button>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            document.getElementById('rzpSuccessDoneBtn').onclick = () => { modal.remove(); showSection('wallet-section'); };
+        }
+
 
         getEl('rechargeSubmitBtn').onclick = async () => {
             const utr = getEl('rechargeUtrInput').value;
