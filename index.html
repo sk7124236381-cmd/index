@@ -331,28 +331,7 @@
         .accordion-button::after { filter: invert(1) grayscale(100%) brightness(200%); opacity: 0.6; }
         .accordion-item { border-radius: var(--radius-md) !important; margin-bottom: 12px; background: transparent; border: none; }
 
-        /* ── Splash Screen ── */
-        #splashScreenEl {
-            position: fixed;
-            inset: 0;
-            z-index: 999999;
-            background: #000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 1;
-            transition: opacity 0.5s ease;
-        }
-        #splashScreenEl.hide {
-            opacity: 0;
-            pointer-events: none;
-        }
-        #splashScreenEl img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            object-position: center top;
-        }
+
         /* =========================================
            LOGIN PAGE — PREMIUM ANIMATION (login page only)
         ========================================= */
@@ -530,17 +509,6 @@
 
 <body class="theme-dark">
 
-    <!-- ── Splash Screen: image set by admin via settings/splashImage ── -->
-    <div id="splashScreenEl" style="display:none;">
-        <img id="splashImgEl" src="" alt="">
-    </div>
-
-    <!-- Global Loader -->
-    <div id="globalLoaderEl" style="position: fixed; inset: 0; background: var(--bg-base); z-index: 9999; display: flex; justify-content: center; align-items: center; flex-direction: column;">
-        <div class="spinner-border" style="color: var(--accent-cyan); width: 3rem; height: 3rem;" role="status"></div>
-        <div class="mt-3 fw-bold text-uppercase" style="color: var(--text-muted); letter-spacing: 2px; font-size: 0.9rem;">Loading...</div>
-    </div>
-
     <!-- Header -->
     <header class="app-header">
         <div class="header-left">
@@ -656,7 +624,7 @@
         <!-- ================= HOME SECTION ================= -->
         <section id="home-section" class="section">
             <div class="swiper-container" id="promotionSliderEl">
-                <div class="swiper-wrapper placeholder-glow"><div class="swiper-slide"><span class="placeholder w-100 h-100 d-block"></span></div></div>
+                <div class="swiper-wrapper"></div>
                 <div class="swiper-pagination"></div>
             </div>
 
@@ -671,12 +639,10 @@
 
             <h2 class="section-title"><i class="bi bi-lightning-charge-fill" style="color: var(--accent-gold);"></i> Exclusive <span class="exclusive-live-badge">LIVE</span></h2>
             <p class="exclusive-sub-title">Big Winnings For All</p>
-            <div class="row g-3 mb-4 placeholder-glow" id="gamesListEl">
-                <div class="col-6"><div class="game-card-new placeholder"></div></div><div class="col-6"><div class="game-card-new placeholder"></div></div>
-            </div>
+            <div class="row g-3 mb-4" id="gamesListEl"></div>
 
             <h2 class="section-title"><i class="bi bi-shield-check" style="color: var(--accent-cyan);"></i> My Contests</h2>
-            <div id="myContestsListEl" class="placeholder-glow"><div class="glass-card placeholder-glow p-0"><span class="placeholder col-12" style="height: 150px;"></span></div></div>
+            <div id="myContestsListEl"></div>
             <p id="noContestsMessageEl" class="text-muted text-center small fw-bold mt-3" style="display: none;">No upcoming matches joined.</p>
         </section>
 
@@ -694,24 +660,22 @@
         <!-- ================= WALLET SECTION ================= -->
         <section id="wallet-section" class="section">
             <h2 class="section-title mb-3">Wallet</h2>
-            <div class="wallet-card-hero placeholder-glow">
+            <div class="wallet-card-hero">
                 <div class="balance-label">Total Balance</div>
-                <div class="balance-value" id="walletTotalBalanceEl">₹<span class="placeholder col-4"></span></div>
+                <div class="balance-value" id="walletTotalBalanceEl">₹0.00</div>
                 <div class="d-flex gap-2">
                     <button class="btn-custom btn-outline-custom flex-fill text-white" style="border-color: rgba(255,255,255,0.3);" id="addAmountWalletBtnEl"><i class="bi bi-plus-lg"></i> Deposit</button>
                     <button class="btn-custom btn-outline-custom flex-fill text-white" style="border-color: rgba(255,255,255,0.3);" id="withdrawBtnEl"><i class="bi bi-arrow-down-left"></i> Withdraw</button>
                 </div>
             </div>
             
-            <div class="row g-3 mb-4 placeholder-glow">
-                <div class="col-6"><div class="glass-card text-center p-3 m-0"><i class="bi bi-trophy-fill fs-3 mb-2 d-block" style="color: var(--accent-gold);"></i><span class="small text-muted fw-bold text-uppercase d-block mb-1">Winnings</span><h4 class="mb-0 fw-bold" style="color: var(--text-main);" id="walletWinningCashEl">₹<span class="placeholder col-6"></span></h4></div></div>
-                <div class="col-6"><div class="glass-card text-center p-3 m-0"><i class="bi bi-gift-fill fs-3 mb-2 d-block" style="color: var(--accent-cyan);"></i><span class="small text-muted fw-bold text-uppercase d-block mb-1">Bonus</span><h4 class="mb-0 fw-bold" style="color: var(--text-main);" id="walletBonusCashEl">₹<span class="placeholder col-6"></span></h4></div></div>
+            <div class="row g-3 mb-4">
+                <div class="col-6"><div class="glass-card text-center p-3 m-0"><i class="bi bi-trophy-fill fs-3 mb-2 d-block" style="color: var(--accent-gold);"></i><span class="small text-muted fw-bold text-uppercase d-block mb-1">Winnings</span><h4 class="mb-0 fw-bold" style="color: var(--text-main);" id="walletWinningCashEl">₹0.00</h4></div></div>
+                <div class="col-6"><div class="glass-card text-center p-3 m-0"><i class="bi bi-gift-fill fs-3 mb-2 d-block" style="color: var(--accent-cyan);"></i><span class="small text-muted fw-bold text-uppercase d-block mb-1">Bonus</span><h4 class="mb-0 fw-bold" style="color: var(--text-main);" id="walletBonusCashEl">₹0.00</h4></div></div>
             </div>
 
             <h2 class="section-title mt-4"><i class="bi bi-clock-history" style="color: var(--accent-purple);"></i> Transaction History</h2>
-            <div id="walletHistoryListEl" class="placeholder-glow mb-3">
-                <p class="text-muted text-center small fw-bold mt-3">Loading history...</p>
-            </div>
+            <div id="walletHistoryListEl" class="mb-3"></div>
             <a href="#" data-section="transaction-history-section" id="showAllTransactionsBtnEl" class="list-group-item d-flex justify-content-between align-items-center glass-card mb-4" style="display:none;">
                 <span><i class="bi bi-list-ul"></i> View All Transactions</span><i class="bi bi-chevron-right text-muted"></i>
             </a>
@@ -720,9 +684,7 @@
         <!-- ================= TRANSACTION HISTORY (FULL) ================= -->
         <section id="transaction-history-section" class="section">
             <h2 class="section-title mb-3">Transaction History</h2>
-            <div id="fullTransactionHistoryListEl" class="placeholder-glow mb-4">
-                <p class="text-muted text-center small fw-bold mt-3">Loading history...</p>
-            </div>
+            <div id="fullTransactionHistoryListEl" class="mb-4"></div>
         </section>
 
         <!-- ================= RECHARGE (DEPOSIT) ================= -->
@@ -801,17 +763,17 @@
         <!-- ================= PROFILE ================= -->
         <section id="profile-section" class="section">
             <div class="glass-card profile-header border-0 shadow-none mb-0 bg-transparent text-center">
-                <div class="profile-avatar-wrapper placeholder-glow">
+                <div class="profile-avatar-wrapper">
                     <img src="https://via.placeholder.com/100" class="profile-avatar" id="profileAvatarEl">
                     <button class="edit-avatar-btn" id="editNameBtnEl"><i class="bi bi-pencil-fill"></i></button>
                 </div>
-                <h3 class="fw-bold m-0 mt-2 mb-1" id="profileNameEl"><span class="placeholder col-6"></span></h3>
-                <p class="text-muted small mb-4" id="profileEmailEl"><span class="placeholder col-8"></span></p>
+                <h3 class="fw-bold m-0 mt-2 mb-1" id="profileNameEl"></h3>
+                <p class="text-muted small mb-4" id="profileEmailEl"></p>
                 
-                <div class="row g-2 profile-stats-grid placeholder-glow mb-4">
-                    <div class="col-4"><div class="stat-box"><strong id="profileTotalMatchesEl"><span class="placeholder col-6"></span></strong><span>Matches</span></div></div>
-                    <div class="col-4"><div class="stat-box"><strong id="profileWonMatchesEl"><span class="placeholder col-6"></span></strong><span>Wins</span></div></div>
-                    <div class="col-4"><div class="stat-box"><strong id="profileTotalEarningsEl" style="color: var(--accent-gold);"><span class="placeholder col-8"></span></strong><span>Earned</span></div></div>
+                <div class="row g-2 profile-stats-grid mb-4">
+                    <div class="col-4"><div class="stat-box"><strong id="profileTotalMatchesEl">0</strong><span>Matches</span></div></div>
+                    <div class="col-4"><div class="stat-box"><strong id="profileWonMatchesEl">0</strong><span>Wins</span></div></div>
+                    <div class="col-4"><div class="stat-box"><strong id="profileTotalEarningsEl" style="color: var(--accent-gold);">₹0</strong><span>Earned</span></div></div>
                 </div>
             </div>
 
@@ -892,14 +854,14 @@
         <!-- ================= EARNINGS ================= -->
         <section id="earnings-section" class="section">
             <h2 class="section-title">Statistics & Earnings</h2>
-            <div class="glass-card text-center py-4 mb-3 placeholder-glow">
+            <div class="glass-card text-center py-4 mb-3">
                 <div style="width: 60px; height: 60px; background: rgba(6, 182, 212, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px;"><i class="bi bi-graph-up-arrow fs-2" style="color: var(--accent-cyan);"></i></div>
-                <h2 class="fw-bold mb-1" style="color: var(--text-main);" id="earningsTotalEl">₹<span class="placeholder col-4"></span></h2>
+                <h2 class="fw-bold mb-1" style="color: var(--text-main);" id="earningsTotalEl">₹0.00</h2>
                 <p class="text-muted small text-uppercase fw-bold m-0">Match Earnings</p>
             </div>
-            <div class="glass-card text-center py-4 placeholder-glow">
+            <div class="glass-card text-center py-4">
                 <div style="width: 60px; height: 60px; background: rgba(139, 92, 246, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px;"><i class="bi bi-people-fill fs-2" style="color: var(--accent-purple);"></i></div>
-                <h2 class="fw-bold mb-1" style="color: var(--text-main);" id="earningsReferralEl">₹<span class="placeholder col-4"></span></h2>
+                <h2 class="fw-bold mb-1" style="color: var(--text-main);" id="earningsReferralEl">₹0.00</h2>
                 <p class="text-muted small text-uppercase fw-bold m-0">Referral Rewards</p>
             </div>
         </section>
@@ -1179,7 +1141,7 @@
             applyTheme(savedTheme);
         }
 
-        const showLoader = (show) => { getEl('globalLoaderEl').style.display = show ? 'flex' : 'none'; };
+        const showLoader = (_show) => { /* loader removed */ };
         const formatDate = (ts) => ts ? new Date(ts).toLocaleString('en-IN', { day: 'numeric', month: 'short', hour:'numeric', minute:'2-digit' }) : 'N/A';
         function getTimeRemaining(startTime) { const diff = startTime - Date.now(); if (diff <= 0) return 'Live Now'; const d = Math.floor(diff/86400000), h = Math.floor((diff%86400000)/3600000), m = Math.floor((diff%3600000)/60000); return `${d>0?d+'d ':''}${h>0||d>0?h+'h ':''}${m}m`; }
 
@@ -1448,24 +1410,6 @@
             const logoUrl = appSettings.logoUrl || 'https://via.placeholder.com/100/18181b/06b6d4?text=LOGO';
             const appName = appSettings.appName || 'NK E SPORTS';
 
-            // ── Splash Screen (shown once per session if admin set an image) ──
-            if (appSettings.splashImage && !sessionStorage.getItem('splashShown')) {
-                sessionStorage.setItem('splashShown', '1');
-                const splashEl = document.getElementById('splashScreenEl');
-                const splashImg = document.getElementById('splashImgEl');
-                splashImg.src = appSettings.splashImage;
-                splashEl.style.display = 'flex';
-                // Hide after 3 seconds with fade
-                setTimeout(() => {
-                    splashEl.classList.add('hide');
-                    setTimeout(() => { splashEl.style.display = 'none'; }, 500);
-                }, 3000);
-                // Tap to skip
-                splashEl.addEventListener('click', () => {
-                    splashEl.classList.add('hide');
-                    setTimeout(() => { splashEl.style.display = 'none'; }, 500);
-                }, { once: true });
-            }
             
             document.querySelectorAll('.app-logo-img').forEach(img => img.src = logoUrl);
             document.querySelectorAll('.app-name-text').forEach(el => el.textContent = appName);
@@ -2216,7 +2160,7 @@
             const historyList = getEl('walletHistoryListEl');
             const showAllBtn = getEl('showAllTransactionsBtnEl');
             if(!currentUser) return;
-            historyList.innerHTML = '<div class="text-center py-4"><div class="spinner-border text-primary"></div></div>';
+            historyList.innerHTML = '';
             if(showAllBtn) showAllBtn.style.display = 'none';
 
             try {
@@ -2232,7 +2176,7 @@
         async function loadFullTransactionHistory() {
             const historyList = getEl('fullTransactionHistoryListEl');
             if(!currentUser || !historyList) return;
-            historyList.innerHTML = '<div class="text-center py-4"><div class="spinner-border text-primary"></div></div>';
+            historyList.innerHTML = '';
 
             try {
                 const transactions = await fetchUserTransactions();
@@ -2260,7 +2204,7 @@
 
         async function loadMatchHistory() {
             const body = getEl('matchHistoryBodyEl'); 
-            body.innerHTML = '<div class="text-center py-4"><div class="spinner-border text-primary"></div></div>';
+            body.innerHTML = '';
             
             try {
                 const snap = await get(ref(db, 'tournaments')); 
@@ -2302,7 +2246,7 @@
             // BUG FIX: In app/WebView context, localStorage is isolated per device/session.
             // Always read from Firebase settings/demoLink as the source of truth.
             // localStorage is only kept as a fast cache fallback.
-            getEl('myReferralLinkEl').textContent = "Loading...";
+            getEl('myReferralLinkEl').textContent = "";
             try {
                 const linkSnap = await get(ref(db, 'settings/demoLink'));
                 const APP_DOWNLOAD_LINK = linkSnap.val() || localStorage.getItem('demo_link') || '';
@@ -2340,7 +2284,7 @@
         };
 
         async function loadLeaderboard() {
-            const list = getEl('leaderboardListEl'); list.innerHTML = '<div class="text-center py-4"><div class="spinner-border text-primary"></div></div>';
+            const list = getEl('leaderboardListEl'); list.innerHTML = '';
             try {
                 const snap = await get(ref(db, 'users')); const users = [];
                 snap.forEach(c => { const u=c.val(); if(u.leaderboardRank) users.push(u); });
